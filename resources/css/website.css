@@ -1,0 +1,309 @@
+@import 'tailwindcss';
+/* ============================================================
+   ALP HARVEST – Main Stylesheet
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ---- CSS Variables ---------------------------------------- */
+:root {
+  --green:       #2d5a27;
+  --green-light: #4a7c42;
+  --gold:        #c8922a;
+  --cream:       #faf6ef;
+  --dark:        #1a1a1a;
+  --muted:       #6b7280;
+  --circumference: 150.8px;
+}
+
+/* ---- Base ------------------------------------------------- */
+* { scroll-behavior: smooth; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+/* ---- Grain overlay ---------------------------------------- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.4;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#navbar {
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+#navbar.scrolled {
+  background: rgba(250, 246, 239, 0.97) !important;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Default (hero) nav-link colour – white so it reads on dark hero */
+.nav-link {
+  color: rgba(255, 255, 255, 0.92);
+  transition: color 0.2s ease;
+  font-weight: 500;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #f59e0b; /* amber-400 */
+}
+
+/* Scrolled nav-link colour – dark green to match light bg */
+#navbar.scrolled .nav-link {
+  color: var(--green);
+}
+
+#navbar.scrolled .nav-link:hover {
+  color: var(--gold);
+}
+
+/* Dropdown chevron colour */
+.nav-chevron {
+  stroke: rgba(255, 255, 255, 0.92);
+  transition: stroke 0.2s ease, transform 0.2s ease;
+}
+
+#navbar.scrolled .nav-chevron {
+  stroke: var(--green);
+}
+
+/* Logo text colours */
+.logo-title { color: #14532d; transition: color 0.3s; }   /* green-900 by default */
+.logo-subtitle { color: #92400e; transition: color 0.3s; } /* amber-800 by default */
+
+/* On hero (un-scrolled): make logo text white so it shows on dark bg */
+#navbar:not(.scrolled) .logo-title    { color: #ffffff; }
+#navbar:not(.scrolled) .logo-subtitle { color: #fde68a; } /* amber-200 */
+
+/* Hamburger bars */
+.hb-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  transition: background 0.3s, transform 0.3s;
+}
+
+#navbar:not(.scrolled) .hb-bar { background: rgba(255,255,255,0.9); }
+#navbar.scrolled        .hb-bar { background: var(--green); }
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  z-index: 200;
+}
+
+/* Level-1 dropdown (Products panel) */
+.dropdown:hover > .dropdown-menu,
+.dropdown:focus-within > .dropdown-menu {
+  display: block;
+}
+
+/* Level-2 sub-dropdown */
+.sub-dropdown:hover > .sub-dropdown-menu,
+.sub-dropdown:focus-within > .sub-dropdown-menu {
+  display: block;
+}
+
+.sub-dropdown-menu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-left: 4px;
+  z-index: 201;
+  min-width: 210px;
+}
+
+/* ============================================================
+   MOBILE DRAWER
+   ============================================================ */
+#mobile-drawer {
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(.4, 0, .2, 1);
+}
+
+#mobile-drawer.open { transform: translateX(0); }
+
+#drawer-overlay {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#drawer-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Mobile accordion */
+.mobile-sub {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.mobile-sub.open { max-height: 600px; }
+
+.mobile-sub-2 {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.mobile-sub-2.open { max-height: 400px; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero-pattern {
+  background-color: var(--green);
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   CAROUSEL
+   ============================================================ */
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(.4, 0, .2, 1);
+}
+
+.carousel-slide { flex: 0 0 100%; }
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: background 0.3s, width 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-dot.active {
+  background: #ffffff;
+  width: 24px;
+}
+
+/* ============================================================
+   FEATURED HORIZONTAL SCROLL
+   ============================================================ */
+.featured-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem;
+}
+
+.featured-scroll::-webkit-scrollbar { height: 4px; }
+.featured-scroll::-webkit-scrollbar-track { background: #e5ddd0; border-radius: 4px; }
+.featured-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+.featured-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+}
+
+/* ============================================================
+   PRODUCT CARDS
+   ============================================================ */
+.product-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.leaf-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, var(--green), var(--gold));
+  border-radius: 2px;
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--green), var(--gold));
+  z-index: 9999;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ============================================================
+   FLOATING BUTTONS
+   ============================================================ */
+.float-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.float-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+#back-to-top {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .featured-card { flex: 0 0 200px; }
+}

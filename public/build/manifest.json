@@ -1,0 +1,34 @@
+{
+  "_module.esm-Q21ypWcG.js": {
+    "file": "assets/module.esm-Q21ypWcG.js",
+    "name": "module.esm"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DlFEVeTp.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/website.css": {
+    "file": "assets/website-CIyJJIp2.css",
+    "src": "resources/css/website.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DaoF7mKY.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-Q21ypWcG.js"
+    ]
+  },
+  "resources/js/website.js": {
+    "file": "assets/website-Cs2qOZqd.js",
+    "name": "website",
+    "src": "resources/js/website.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-Q21ypWcG.js"
+    ]
+  }
+}
