@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 
-Route::domain(config('app.admin_subdomain') . '.' . config('app.domain'))->name('admin.')
+// Route::domain(config('app.admin_subdomain') . '.' . config('app.domain'))->name('admin.')
+Route::domain(config('app.admin_subdomain'))->name('admin.')
     // ->middleware(['auth:admin'])
     ->group(function () {
 
