@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Permission::created(function (Permission $permission): void {
+            $adminRole = Role::query()
+                ->where('name', 'admin')
+                ->where('guard_name', $permission->guard_name)
+                ->first();
+
+            if (! $adminRole) {
+                return;
+            }
+
+            if (! $adminRole->hasPermissionTo($permission)) {
+                $adminRole->givePermissionTo($permission);
+            }
+        });
     }
 }

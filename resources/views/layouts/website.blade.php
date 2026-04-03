@@ -10,8 +10,7 @@
 
     <!-- ── Primary SEO ── -->
     <title>Alp Harvest – Organic Ethnic Rice, Mustard Oil & Pickles from Assam</title>
-    <meta name="description"
-        content="Alp Harvest offers 100% organic ethnic rice varieties (Black Joha, Sticky Rice, Red Bau, Manipuri Black Rice), cold-pressed Majuli Mustard Oil, and traditional Northeast Indian pickles. Delivered across India.">
+    <meta name="description"content="Alp Harvest offers 100% organic ethnic rice varieties (Black Joha, Sticky Rice, Red Bau, Manipuri Black Rice), cold-pressed Majuli Mustard Oil, and traditional Northeast Indian pickles. Delivered across India.">
     <meta name="keywords" content="Alp Harvest, organic rice Assam, ethnic rice Guwahati, Black Joha rice Assam,
         Majuli mustard oil Guwahati, Manipuri black rice Assam, Red Bau rice Assam,
         Titabor Aijung rice Assam, sticky rice Assam, Northeast India pickles,
