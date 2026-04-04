@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Concerns\HandlesJsonInput;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Store;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ class OrderController extends Controller
 
     public function index(): View
     {
-        $orders = Order::withCount('items')->latest()->paginate(10);
+        $orders = Order::with(['store', 'customer'])->withCount('items')->latest()->paginate(10);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -119,11 +120,35 @@ class OrderController extends Controller
         $orderData['order_number'] = $orderData['order_number'] ?: $this->generateOrderNumber($order?->id);
         $orderData['subtotal'] = $orderData['subtotal'] ?? collect($items)->sum('total_price');
         $orderData['total'] = $orderData['total'] ?? $orderData['subtotal'];
+        $orderData['store_id'] = $order?->store_id ?: $this->resolveStoreIdFromItems($items);
 
         return [
             'order' => $orderData,
             'items' => $items,
         ];
+    }
+
+    private function resolveStoreIdFromItems(array $items): ?int
+    {
+        $productIds = collect($items)
+            ->pluck('product_id')
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        if ($productIds->isNotEmpty()) {
+            $storeId = Product::query()
+                ->whereIn('id', $productIds)
+                ->whereNotNull('store_id')
+                ->value('store_id');
+
+            if ($storeId) {
+                return (int) $storeId;
+            }
+        }
+
+        return Store::query()->where('is_active', true)->orderBy('id')->value('id')
+            ?? Store::query()->orderBy('id')->value('id');
     }
 
     private function generateOrderNumber(?int $ignoreId = null): string

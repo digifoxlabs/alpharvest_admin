@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Concerns\HandlesJsonInput;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Store;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,7 +19,7 @@ class ProductController extends Controller
 
     public function index(): View
     {
-        $products = Product::with('category')->latest()->paginate(10);
+        $products = Product::with(['category', 'store'])->latest()->paginate(10);
 
         return view('admin.products.index', compact('products'));
     }
@@ -36,6 +37,7 @@ class ProductController extends Controller
         $validated['slug'] = $this->resolveSlug($validated['slug'] ?? null, $validated['name']);
         $validated['metadata'] = $this->decodeOptionalJson($request, 'metadata');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['store_id'] = $this->resolveStoreId($validated['product_category_id'] ?? null);
 
         Product::create($validated);
 
@@ -55,6 +57,7 @@ class ProductController extends Controller
         $validated['slug'] = $this->resolveSlug($validated['slug'] ?? null, $validated['name'], $product->id);
         $validated['metadata'] = $this->decodeOptionalJson($request, 'metadata');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['store_id'] = $product->store_id ?: $this->resolveStoreId($validated['product_category_id'] ?? null);
 
         $product->update($validated);
 
@@ -86,6 +89,20 @@ class ProductController extends Controller
             'inventory_quantity' => ['required', 'integer', 'min:0'],
             'metadata' => ['nullable', 'string'],
         ];
+    }
+
+    private function resolveStoreId(?int $categoryId = null): ?int
+    {
+        if ($categoryId) {
+            $categoryStoreId = ProductCategory::query()->whereKey($categoryId)->value('store_id');
+
+            if ($categoryStoreId) {
+                return (int) $categoryStoreId;
+            }
+        }
+
+        return Store::query()->where('is_active', true)->orderBy('id')->value('id')
+            ?? Store::query()->orderBy('id')->value('id');
     }
 
     private function resolveSlug(?string $slug, string $name, ?int $ignoreId = null): string

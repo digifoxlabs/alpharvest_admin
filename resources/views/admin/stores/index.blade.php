@@ -25,6 +25,7 @@
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Store</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Support</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Currency</th>
+                        <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">WhatsApp Store Readiness</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Status</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Actions</th>
                     </tr>
@@ -38,6 +39,17 @@
                             </td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $store->support_phone ?: '-' }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $store->currency }}</td>
+                            <td class="px-5 py-4">
+                                @php($readiness = $store->catalog_readiness ?? ['ready' => false, 'issues' => []])
+                                <div class="flex flex-col gap-1">
+                                    <span class="inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-medium {{ $readiness['ready'] ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
+                                        {{ $readiness['ready'] ? 'Ready' : 'Needs Setup' }}
+                                    </span>
+                                    @if (! empty($readiness['issues']))
+                                        <p class="max-w-xs text-xs text-gray-500 dark:text-gray-400">{{ $readiness['issues'][0] }}</p>
+                                    @endif
+                                </div>
+                            </td>
                             <td class="px-5 py-4">
                                 <span class="rounded-full px-2.5 py-1 text-xs font-medium {{ $store->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
                                     {{ $store->is_active ? 'Active' : 'Inactive' }}
@@ -60,7 +72,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">No stores found.</td>
+                            <td colspan="6" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">No stores found.</td>
                         </tr>
                     @endforelse
                 </tbody>

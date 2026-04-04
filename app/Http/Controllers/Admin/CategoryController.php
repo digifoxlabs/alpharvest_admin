@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
+use App\Models\Store;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,7 +15,10 @@ class CategoryController extends Controller
 {
     public function index(): View
     {
-        $categories = ProductCategory::orderBy('sort_order')->orderBy('name')->paginate(10);
+        $categories = ProductCategory::with('store')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->paginate(10);
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -29,6 +33,7 @@ class CategoryController extends Controller
         $validated = $request->validate($this->rules());
         $validated['slug'] = $this->resolveSlug($validated['slug'] ?? null, $validated['name']);
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['store_id'] = $this->defaultStore()?->id;
 
         ProductCategory::create($validated);
 
@@ -45,6 +50,7 @@ class CategoryController extends Controller
         $validated = $request->validate($this->rules($category));
         $validated['slug'] = $this->resolveSlug($validated['slug'] ?? null, $validated['name'], $category->id);
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['store_id'] = $category->store_id ?: $this->defaultStore()?->id;
 
         $category->update($validated);
 
@@ -66,6 +72,12 @@ class CategoryController extends Controller
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
+    }
+
+    private function defaultStore(): ?Store
+    {
+        return Store::query()->where('is_active', true)->orderBy('id')->first()
+            ?? Store::query()->orderBy('id')->first();
     }
 
     private function resolveSlug(?string $slug, string $name, ?int $ignoreId = null): string

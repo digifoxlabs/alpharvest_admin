@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Order extends Model
+class Cart extends Model
 {
     use HasFactory;
 
@@ -15,25 +15,15 @@ class Order extends Model
         'store_id',
         'customer_id',
         'conversation_id',
-        'cart_id',
-        'order_number',
         'status',
-        'payment_status',
         'currency',
         'subtotal',
         'total',
-        'notes',
-        'metadata',
-        'placed_at',
-        'paid_at',
+        'checked_out_at',
     ];
 
     protected $casts = [
-        'metadata' => 'array',
-        'subtotal' => 'decimal:2',
-        'total' => 'decimal:2',
-        'placed_at' => 'datetime',
-        'paid_at' => 'datetime',
+        'checked_out_at' => 'datetime',
     ];
 
     public function store(): BelongsTo
@@ -51,18 +41,13 @@ class Order extends Model
         return $this->belongsTo(Conversation::class);
     }
 
-    public function cart(): BelongsTo
-    {
-        return $this->belongsTo(Cart::class);
-    }
-
     public function items(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(CartItem::class);
     }
 
-    public function payments(): HasMany
+    public function orders(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Order::class);
     }
 }

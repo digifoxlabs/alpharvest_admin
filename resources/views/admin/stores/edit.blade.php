@@ -13,6 +13,8 @@
         'action' => route('admin.stores.update', $store),
         'method' => 'PUT',
         'store' => $store,
+        'deliveryZonesText' => $deliveryZonesText,
+        'undeliverableMessage' => $undeliverableMessage,
     ])
 </div>
 @endsection

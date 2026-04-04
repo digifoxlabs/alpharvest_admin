@@ -13,6 +13,8 @@
         'action' => route('admin.stores.store'),
         'method' => 'POST',
         'store' => null,
+        'deliveryZonesText' => $deliveryZonesText,
+        'undeliverableMessage' => $undeliverableMessage,
     ])
 </div>
 @endsection

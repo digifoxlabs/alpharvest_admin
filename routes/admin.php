@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PermissionManagementController;
 use App\Http\Controllers\Admin\ProductController;
@@ -62,6 +63,10 @@ Route::prefix('admin')
             Route::get('/{order}/edit', [OrderController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
             Route::put('/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('update');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+        });
+
+        Route::prefix('messages')->name('messages.')->group(function () {
+            Route::get('/', [MessageController::class, 'index'])->middleware('permission:view chats')->name('index');
         });
 
         Route::prefix('users')->name('users.')->group(function () {

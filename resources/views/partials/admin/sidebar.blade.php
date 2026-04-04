@@ -70,7 +70,7 @@
                     @canany(['view stores', 'view products', 'view categories', 'view orders', 'view chats', 'view templates'])
                         <li>
                             <a href="#" @click.prevent="selected = selected === 'modules' ? '' : 'modules'"
-                                class="menu-item menu-item-inactive">
+                                class="menu-item {{ request()->routeIs('admin.stores.*') || request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.orders.*') || request()->routeIs('admin.messages.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                                 <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Business Modules</span>
                             </a>
 
@@ -109,7 +109,12 @@
                                         </li>
                                     @endcan
                                     @can('view chats')
-                                        <li><span class="menu-dropdown-item menu-dropdown-item-inactive">WhatsApp Chats</span></li>
+                                        <li>
+                                            <a href="{{ route('admin.messages.index') }}"
+                                                class="menu-dropdown-item {{ request()->routeIs('admin.messages.*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}">
+                                                WhatsApp Chats
+                                            </a>
+                                        </li>
                                     @endcan
                                     @can('view templates')
                                         <li><span class="menu-dropdown-item menu-dropdown-item-inactive">Message Templates</span></li>

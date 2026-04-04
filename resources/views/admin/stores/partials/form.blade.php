@@ -1,5 +1,5 @@
 <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-    <form action="{{ $action }}" method="POST" class="space-y-5">
+    <form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
         @if ($method !== 'POST')
             @method($method)
@@ -46,10 +46,36 @@
 
         <div class="grid gap-5 md:grid-cols-2">
             <div><label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Text</label><textarea name="whatsapp_contact_text" rows="3" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('whatsapp_contact_text', $store?->whatsapp_contact_text) }}</textarea></div>
-            <div><label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Store Image Path</label><input type="text" name="whatsapp_store_image_path" value="{{ old('whatsapp_store_image_path', $store?->whatsapp_store_image_path) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"></div>
+            <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $store ? 'Replace Store Image' : 'Store Image' }}</label>
+                <input type="file" name="whatsapp_store_image" accept="image/*" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                @error('whatsapp_store_image')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+            </div>
         </div>
 
-        <div><label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Settings JSON</label><textarea name="settings" rows="5" class="w-full rounded-xl border border-gray-200 px-4 py-3 font-mono text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('settings', isset($store) && $store?->settings ? json_encode($store->settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '') }}</textarea>@error('settings')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror</div>
+        <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Zones</label>
+            <textarea name="delivery_zones_text" rows="4" placeholder="700001 | Kolkata&#10;700002 | Howrah" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('delivery_zones_text', $deliveryZonesText ?? '') }}</textarea>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">One area per line using <code>pincode | city</code>.</p>
+            @error('delivery_zones_text')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+        </div>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Undeliverable Message</label>
+            <textarea name="undeliverable_message" rows="3" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('undeliverable_message', $undeliverableMessage ?? '') }}</textarea>
+            @error('undeliverable_message')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+        </div>
+
+        @if ($store?->whatsapp_store_image_url)
+            <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                <p class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Current Store Image</p>
+                <img src="{{ $store->whatsapp_store_image_url }}" alt="{{ $store->name }}" class="h-24 w-24 rounded-xl object-cover">
+                <label class="mt-4 inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <input type="checkbox" name="remove_whatsapp_store_image" value="1" @checked(old('remove_whatsapp_store_image'))>
+                    Remove current store image
+                </label>
+            </div>
+        @endif
 
         <label class="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $store?->is_active ?? true))> Active store</label>
 
