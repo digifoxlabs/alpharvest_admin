@@ -33,13 +33,14 @@ return [
 
     'whatsapp' => [
         'base_url' => env('WHATSAPP_BASE_URL', 'https://graph.facebook.com/v20.0'),
-        'token' => env('WHATSAPP_TOKEN'),
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
-        'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
+        'token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
     ],
 
     'payments' => [
-        'default_provider' => env('PAYMENTS_DEFAULT_PROVIDER', 'manual_link'),
+        'default_provider' => env('PAYMENTS_PROVIDER', 'manual_link'),
+        'callback_secret' => env('PAYMENTS_CALLBACK_SECRET'),
     ],
 
 ];
