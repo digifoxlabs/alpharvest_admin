@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FeedController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PermissionManagementController;
@@ -20,7 +21,11 @@ $adminDomain = str_ends_with($adminSubdomain, '.' . $appDomain) || $adminSubdoma
 
 Route::domain($adminDomain)
     ->group(function () {
+        Route::get('/feeds/meta-products', [FeedController::class, 'metaProducts'])->name('feeds.meta-products');
+        Route::get('/feeds/meta-placeholder.svg', [FeedController::class, 'metaPlaceholder'])->name('feeds.meta-placeholder');
+
         Route::middleware('guest')->group(function () {
+            Route::get('/', [AuthController::class, 'create'])->name('login');
             Route::get('/login', [AuthController::class, 'create'])->name('login');
             Route::post('/login', [AuthController::class, 'store'])->name('login.attempt');
         });
