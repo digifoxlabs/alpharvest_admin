@@ -333,6 +333,17 @@ class StoreEngineService
 
     public function featuredProducts(Store $store, int $limit = 4): Collection
     {
+        $featured = $store->products()
+            ->where('is_active', true)
+            ->where('is_featured', true)
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+
+        if ($featured->isNotEmpty()) {
+            return $featured;
+        }
+
         return $store->products()
             ->where('is_active', true)
             ->orderByDesc('id')
@@ -958,5 +969,6 @@ class StoreEngineService
         ]);
     }
 }
+
 
 

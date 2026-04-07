@@ -28,7 +28,20 @@
                 <tbody>
                     @forelse ($products as $product)
                         <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="px-5 py-4"><div class="font-medium text-gray-800 dark:text-white/90">{{ $product->name }}</div><div class="text-xs text-gray-500 dark:text-gray-400">{{ $product->sku }} | {{ $product->slug }}</div></td>
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-12 w-12 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+                                        <img src="{{ $product->image_url ?: asset('images/admin/src/images/user/owner.jpg') }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-gray-800 dark:text-white/90">{{ $product->name }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $product->sku }} | {{ $product->slug }}</div>
+                                        @if ($product->is_featured)
+                                            <span class="mt-1 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">Featured</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $product->category?->name ?: '-' }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ number_format((float) $product->price, 2) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $product->inventory_quantity }}</td>

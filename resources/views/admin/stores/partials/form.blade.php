@@ -48,8 +48,10 @@
             <div><label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Text</label><textarea name="whatsapp_contact_text" rows="3" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('whatsapp_contact_text', $store?->whatsapp_contact_text) }}</textarea></div>
             <div>
                 <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $store ? 'Replace Store Image' : 'Store Image' }}</label>
-                <input type="file" name="whatsapp_store_image" accept="image/*" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <input id="storeImageInput" type="file" name="whatsapp_store_image" accept="image/*" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <input type="hidden" name="cropped_whatsapp_store_image" id="croppedStoreImage">
                 @error('whatsapp_store_image')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+                @error('cropped_whatsapp_store_image')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -66,19 +68,118 @@
             @error('undeliverable_message')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
         </div>
 
-        @if ($store?->whatsapp_store_image_url)
+        <div class="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
             <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
-                <p class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Current Store Image</p>
-                <img src="{{ $store->whatsapp_store_image_url }}" alt="{{ $store->name }}" class="h-24 w-24 rounded-xl object-cover">
-                <label class="mt-4 inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    <input type="checkbox" name="remove_whatsapp_store_image" value="1" @checked(old('remove_whatsapp_store_image'))>
-                    Remove current store image
-                </label>
+                <p class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Store Image Preview</p>
+                <div class="h-40 w-40 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+                    <img id="storeImagePreview" src="{{ old('cropped_whatsapp_store_image') ?: ($store?->whatsapp_store_image_url ?: asset('images/admin/src/images/user/owner.jpg')) }}" alt="{{ $store?->name ?: 'Store image preview' }}" class="h-full w-full object-cover">
+                </div>
+                @if ($store?->whatsapp_store_image_url)
+                    <label class="mt-4 inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" name="remove_whatsapp_store_image" value="1" @checked(old('remove_whatsapp_store_image'))>
+                        Remove current store image
+                    </label>
+                @endif
             </div>
-        @endif
+
+            <div id="storeCropSection" class="hidden rounded-2xl border border-dashed border-gray-300 p-4 dark:border-gray-700">
+                <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_180px]">
+                    <div class="overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900">
+                        <img id="storeCropImage" alt="Crop store image" class="max-h-[420px] w-full object-contain">
+                    </div>
+                    <div>
+                        <p class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Cropped Preview</p>
+                        <div class="h-36 w-36 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+                            <div id="storeCropPreview" class="h-full w-full overflow-hidden rounded-xl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <label class="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $store?->is_active ?? true))> Active store</label>
 
         <div class="flex items-center gap-3"><button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Save Store</button><a href="{{ route('admin.stores.index') }}" class="text-sm font-medium text-gray-600 dark:text-gray-300">Cancel</a></div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+(() => {
+    const input = document.getElementById('storeImageInput');
+    const cropSection = document.getElementById('storeCropSection');
+    const cropImage = document.getElementById('storeCropImage');
+    const cropPreview = document.getElementById('storeCropPreview');
+    const imagePreview = document.getElementById('storeImagePreview');
+    const hiddenInput = document.getElementById('croppedStoreImage');
+    const form = input?.form;
+    let cropper = null;
+
+    function updatePreview() {
+        if (!cropper) {
+            return;
+        }
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 600,
+            height: 600,
+            imageSmoothingQuality: 'high',
+        });
+
+        if (!canvas) {
+            return;
+        }
+
+        const dataUrl = canvas.toDataURL('image/png');
+        hiddenInput.value = dataUrl;
+        cropPreview.innerHTML = '';
+
+        const previewImage = document.createElement('img');
+        previewImage.src = dataUrl;
+        previewImage.alt = 'Cropped store image preview';
+        previewImage.className = 'h-full w-full object-cover';
+        cropPreview.appendChild(previewImage);
+        imagePreview.src = dataUrl;
+    }
+
+    input?.addEventListener('change', (event) => {
+        const [file] = event.target.files || [];
+
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (loadEvent) => {
+            cropSection.classList.remove('hidden');
+            cropImage.src = loadEvent.target?.result;
+
+            if (cropper) {
+                cropper.destroy();
+            }
+
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                preview: '#storeCropPreview',
+                autoCropArea: 1,
+                responsive: true,
+                cropend: updatePreview,
+                ready: updatePreview,
+                zoom: updatePreview,
+                crop: updatePreview,
+            });
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    form?.addEventListener('submit', () => {
+        if (cropper) {
+            updatePreview();
+        }
+    });
+})();
+</script>
+@endpush

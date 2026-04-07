@@ -7,6 +7,7 @@ use App\Models\Store;
 use App\Services\StoreEngineService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -76,9 +77,7 @@ class StoreController extends Controller
 
     public function destroy(Store $store): RedirectResponse
     {
-        if ($store->whatsapp_store_image_path) {
-            Storage::disk('public')->delete($store->whatsapp_store_image_path);
-        }
+        $this->deleteExistingStoreImage($store);
 
         $store->delete();
 
@@ -106,6 +105,7 @@ class StoreController extends Controller
             'delivery_zones_text' => ['nullable', 'string'],
             'undeliverable_message' => ['nullable', 'string', 'max:1024'],
             'whatsapp_store_image' => ['nullable', 'image', 'max:4096'],
+            'cropped_whatsapp_store_image' => ['nullable', 'string'],
             'remove_whatsapp_store_image' => ['nullable', 'boolean'],
         ];
     }
@@ -160,22 +160,75 @@ class StoreController extends Controller
     private function syncStoreImage(Request $request, array $validated, ?Store $store = null): array
     {
         if (($validated['remove_whatsapp_store_image'] ?? false) && $store?->whatsapp_store_image_path) {
-            Storage::disk('public')->delete($store->whatsapp_store_image_path);
+            $this->deleteExistingStoreImage($store);
             $validated['whatsapp_store_image_path'] = null;
         }
 
-        if ($request->hasFile('whatsapp_store_image')) {
-            if ($store?->whatsapp_store_image_path) {
-                Storage::disk('public')->delete($store->whatsapp_store_image_path);
-            }
-
-            $validated['whatsapp_store_image_path'] = $request->file('whatsapp_store_image')
-                ->store('whatsapp/stores', 'public');
+        if (! empty($validated['cropped_whatsapp_store_image'])) {
+            $validated['whatsapp_store_image_path'] = $this->storeImageFromBase64($validated['cropped_whatsapp_store_image'], $store);
+        } elseif ($request->hasFile('whatsapp_store_image')) {
+            $validated['whatsapp_store_image_path'] = $this->storeUploadedImage($request, $store);
         }
 
-        unset($validated['whatsapp_store_image'], $validated['remove_whatsapp_store_image']);
+        unset($validated['whatsapp_store_image'], $validated['cropped_whatsapp_store_image'], $validated['remove_whatsapp_store_image']);
 
         return $validated;
+    }
+
+    private function storeUploadedImage(Request $request, ?Store $store = null): string
+    {
+        $this->deleteExistingStoreImage($store);
+
+        $directory = public_path('uploads/stores');
+        File::ensureDirectoryExists($directory);
+
+        $extension = $request->file('whatsapp_store_image')->getClientOriginalExtension() ?: 'jpg';
+        $filename = (string) Str::uuid() . '.' . strtolower($extension);
+
+        $request->file('whatsapp_store_image')->move($directory, $filename);
+
+        return 'uploads/stores/' . $filename;
+    }
+
+    private function storeImageFromBase64(string $payload, ?Store $store = null): ?string
+    {
+        if (! preg_match('/^data:image\/(png|jpe?g|webp);base64,/', $payload, $matches)) {
+            return null;
+        }
+
+        $data = substr($payload, strpos($payload, ',') + 1);
+        $binary = base64_decode($data, true);
+
+        if ($binary === false) {
+            return null;
+        }
+
+        $this->deleteExistingStoreImage($store);
+
+        $directory = public_path('uploads/stores');
+        File::ensureDirectoryExists($directory);
+
+        $extension = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+        $filename = (string) Str::uuid() . '.' . $extension;
+        file_put_contents($directory . DIRECTORY_SEPARATOR . $filename, $binary);
+
+        return 'uploads/stores/' . $filename;
+    }
+
+    private function deleteExistingStoreImage(?Store $store): void
+    {
+        if (! $store?->whatsapp_store_image_path) {
+            return;
+        }
+
+        $publicFile = public_path($store->whatsapp_store_image_path);
+        if (File::exists($publicFile)) {
+            File::delete($publicFile);
+        }
+
+        if (Storage::disk('public')->exists($store->whatsapp_store_image_path)) {
+            Storage::disk('public')->delete($store->whatsapp_store_image_path);
+        }
     }
 
     private function resolveSlug(?string $slug, string $name, string $table, ?int $ignoreId = null): string

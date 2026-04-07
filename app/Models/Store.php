@@ -81,6 +81,10 @@ class Store extends Model
             return null;
         }
 
+        if (str_starts_with($this->whatsapp_store_image_path, 'uploads/')) {
+            return asset($this->whatsapp_store_image_path);
+        }
+
         return Storage::disk('public')->url($this->whatsapp_store_image_path);
     }
 }

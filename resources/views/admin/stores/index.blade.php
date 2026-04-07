@@ -34,8 +34,15 @@
                     @forelse ($stores as $store)
                         <tr class="border-b border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4">
-                                <div class="font-medium text-gray-800 dark:text-white/90">{{ $store->name }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $store->slug }}</div>
+                                <div class="flex items-center gap-3">
+                                    <div class="h-12 w-12 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+                                        <img src="{{ $store->whatsapp_store_image_url ?: asset('images/admin/src/images/user/owner.jpg') }}" alt="{{ $store->name }}" class="h-full w-full object-cover">
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-gray-800 dark:text-white/90">{{ $store->name }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $store->slug }}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $store->support_phone ?: '-' }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $store->currency }}</td>

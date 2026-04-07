@@ -28,11 +28,13 @@ class Product extends Model
         'sale_price',
         'inventory_quantity',
         'metadata',
+        'is_featured',
         'is_active',
     ];
 
     protected $casts = [
         'metadata' => 'array',
+        'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
@@ -62,6 +64,10 @@ class Product extends Model
     {
         if (! $this->image_path) {
             return null;
+        }
+
+        if (str_starts_with($this->image_path, 'uploads/')) {
+            return asset($this->image_path);
         }
 
         return Storage::disk('public')->url($this->image_path);
