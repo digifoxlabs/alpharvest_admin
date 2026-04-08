@@ -6,18 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Services\WhatsAppWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 class WhatsAppWebhookController extends Controller
 {
     public function __construct(protected WhatsAppWebhookService $webhooks)
     {
     }
 
-    public function verify(Request $request)
+  public function verify(Request $request)
     {
-        $mode = $request->query('hub.mode', $request->query('hub_mode'));
-        $verifyToken = $request->query('hub.verify_token', $request->query('hub_verify_token'));
-        $challenge = $request->query('hub.challenge', $request->query('hub_challenge'));
+        $mode = $request->query('hub_mode');
+        $verifyToken = $request->query('hub_verify_token');
+        $challenge = $request->query('hub_challenge');
 
         if (
             $mode === 'subscribe'
