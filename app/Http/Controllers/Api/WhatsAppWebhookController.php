@@ -82,28 +82,39 @@ class WhatsAppWebhookController extends Controller
     /**
      * Incoming WhatsApp message handler
      */
+    // public function handle(Request $request): JsonResponse
+    // {
+    //     Log::info('WhatsApp Webhook EVENT received', [
+    //         'payload' => $request->all()
+    //     ]);
+
+    //     try {
+
+    //         $this->webhooks->ingest($request->all());
+
+    //         Log::info('Webhook payload processed successfully');
+
+    //     } catch (\Throwable $e) {
+
+    //         Log::error('Webhook processing FAILED', [
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'accepted'
+    //     ]);
+    // }
+
     public function handle(Request $request): JsonResponse
-    {
-        Log::info('WhatsApp Webhook EVENT received', [
-            'payload' => $request->all()
-        ]);
+{
+    Log::info('WhatsApp RAW webhook payload received', [
+        'payload' => $request->all()
+    ]);
 
-        try {
-
-            $this->webhooks->ingest($request->all());
-
-            Log::info('Webhook payload processed successfully');
-
-        } catch (\Throwable $e) {
-
-            Log::error('Webhook processing FAILED', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'accepted'
-        ]);
-    }
+    return response()->json([
+        'status' => 'received'
+    ]);
+}
 }
