@@ -16,7 +16,7 @@
   <div class="max-w-7xl mx-auto flex items-center justify-between relative">
 
     <!-- Hamburger (mobile left) -->
-    <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2 z-10" aria-label="Open menu">
+    <button id="hamburger" class="hamburger-button md:hidden flex flex-col gap-1.5 p-2 z-10" aria-label="Open menu">
       <span class="hb-bar"></span>
       <span class="hb-bar"></span>
       <span class="hb-bar" style="width:16px"></span>

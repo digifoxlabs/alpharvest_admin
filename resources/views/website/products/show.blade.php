@@ -51,28 +51,41 @@
   $whatsAppMessage = rawurlencode('Hi, I would like to enquire about ' . $product->name . ' (' . $product->sku . ').');
 @endphp
 
-<section class="product-hero pt-28 pb-16 px-4">
+<section class="product-hero product-page-shell pt-28 pb-14 px-4 md:pb-20">
   <div class="max-w-7xl mx-auto">
-    <nav class="mb-8 text-sm text-gray-500">
-      <a href="{{ route('home') }}" class="hover:text-green-800 transition-colors">Home</a>
-      <span class="mx-2">/</span>
-      <a href="{{ route('home') }}#products" class="hover:text-green-800 transition-colors">Products</a>
+    <nav class="product-breadcrumb mb-6 hidden md:flex items-center flex-wrap gap-2 text-sm text-white/70">
+      <a href="{{ route('home') }}" class="transition-colors hover:text-white">Home</a>
+      <span>/</span>
+      <a href="{{ route('home') }}#products" class="transition-colors hover:text-white">Products</a>
       @if ($product->category)
-        <span class="mx-2">/</span>
-        <a href="{{ route('home') }}#{{ $product->category->slug }}" class="hover:text-green-800 transition-colors">{{ $product->category->name }}</a>
+        <span>/</span>
+        <a href="{{ route('home') }}#{{ $product->category->slug }}" class="transition-colors hover:text-white">{{ $product->category->name }}</a>
       @endif
-      <span class="mx-2">/</span>
-      <span class="text-green-900">{{ $product->name }}</span>
+      <span>/</span>
+      <span class="text-white">{{ $product->name }}</span>
     </nav>
 
-    <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 items-start">
-      <div class="product-gallery-card rounded-[2rem] border border-white/70 bg-white/80 p-5 backdrop-blur-sm">
-        <div class="rounded-[1.5rem] bg-[#f8f4ed] min-h-[420px] flex items-center justify-center p-6">
-          <img src="{{ $product->image_url ?: $productFallbackImage }}" alt="{{ $product->name }}" class="max-h-[440px] w-full object-contain drop-shadow-xl" />
+    <div class="product-page-grid">
+      <div class="product-media-shell">
+        <div class="product-media-stage">
+          <img src="{{ $product->image_url ?: $productFallbackImage }}" alt="{{ $product->name }}" class="product-main-image" />
+        </div>
+
+        <div class="product-support-grid">
+          <div class="product-support-card">
+            <div class="product-support-label">Category</div>
+            <div class="product-support-value">{{ $product->category?->name ?? 'Curated Product' }}</div>
+          </div>
+          <div class="product-support-card">
+            <div class="product-support-label">Status</div>
+            <div class="product-support-value {{ $product->inventory_quantity > 0 ? 'text-green-800' : 'text-red-600' }}">
+              {{ $product->inventory_quantity > 0 ? 'Ready to order' : 'Currently unavailable' }}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="product-info-card rounded-[2rem] bg-white p-7 md:p-9 border border-green-100">
+      <div class="product-panel">
         <div class="flex flex-wrap items-center gap-3 mb-4">
           @if ($product->category)
             <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-green-800">{{ $product->category->name }}</span>
@@ -82,49 +95,49 @@
           @endif
         </div>
 
-        <h1 class="text-4xl md:text-5xl font-bold text-green-950 leading-tight" style="font-family:'Playfair Display',serif">{{ $product->name }}</h1>
+        <h1 class="text-3xl md:text-5xl font-bold leading-tight text-green-950" style="font-family:'Playfair Display',serif">{{ $product->name }}</h1>
 
-        <div class="mt-6 flex flex-wrap items-end gap-3">
+        <div class="product-price-wrap mt-6">
           @if ($product->has_discount)
-            <span class="text-xl text-gray-400 line-through">₹{{ number_format((float) $product->price, 2) }}</span>
+            <span class="product-price-old">₹{{ number_format((float) $product->price, 2) }}</span>
           @endif
-          <span class="text-4xl font-bold text-amber-700">₹{{ number_format($product->display_price, 2) }}</span>
+          <span class="product-price-current">₹{{ number_format($product->display_price, 2) }}</span>
         </div>
 
         <p class="mt-6 text-base leading-8 text-gray-600">
           {{ $product->description ?: 'This product is part of our carefully selected collection, packed to bring authentic flavour and quality to your table.' }}
         </p>
 
-        <div class="mt-8 grid sm:grid-cols-2 gap-4">
-          <div class="rounded-2xl bg-[#f8f4ed] p-4">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">SKU</div>
-            <div class="mt-2 text-base font-semibold text-green-900">{{ $product->sku }}</div>
+        <div class="product-stats-grid mt-8">
+          <div class="product-stat-card">
+            <div class="product-stat-label">SKU</div>
+            <div class="product-stat-value">{{ $product->sku }}</div>
           </div>
-          <div class="rounded-2xl bg-[#f8f4ed] p-4">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Availability</div>
-            <div class="mt-2 text-base font-semibold {{ $product->inventory_quantity > 0 ? 'text-green-800' : 'text-red-600' }}">
-              {{ $product->inventory_quantity > 0 ? 'In Stock' : 'Currently Unavailable' }}
+          <div class="product-stat-card">
+            <div class="product-stat-label">Availability</div>
+            <div class="product-stat-value {{ $product->inventory_quantity > 0 ? 'text-green-800' : 'text-red-600' }}">
+              {{ $product->inventory_quantity > 0 ? 'In Stock' : 'Out of Stock' }}
             </div>
           </div>
           @if ($product->size)
-            <div class="rounded-2xl bg-[#f8f4ed] p-4">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Size</div>
-              <div class="mt-2 text-base font-semibold text-green-900">{{ $product->size }}</div>
+            <div class="product-stat-card">
+              <div class="product-stat-label">Size</div>
+              <div class="product-stat-value">{{ $product->size }}</div>
             </div>
           @endif
           @if ($product->color)
-            <div class="rounded-2xl bg-[#f8f4ed] p-4">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Color</div>
-              <div class="mt-2 text-base font-semibold text-green-900">{{ $product->color }}</div>
+            <div class="product-stat-card">
+              <div class="product-stat-label">Color</div>
+              <div class="product-stat-value">{{ $product->color }}</div>
             </div>
           @endif
         </div>
 
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <a href="https://wa.me/919864371720?text={{ $whatsAppMessage }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full bg-green-800 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-green-700">
+        <div class="product-cta-group mt-8">
+          <a href="https://wa.me/919864371720?text={{ $whatsAppMessage }}" target="_blank" rel="noopener noreferrer" class="product-primary-cta">
             Enquire on WhatsApp
           </a>
-          <a href="{{ route('home') }}#products" class="inline-flex items-center justify-center rounded-full border border-green-200 px-7 py-4 text-sm font-semibold text-green-900 transition-colors hover:bg-green-50">
+          <a href="{{ route('home') }}#products" class="product-secondary-cta">
             Back to Products
           </a>
         </div>
@@ -134,17 +147,17 @@
 </section>
 
 @if ($relatedProducts->isNotEmpty())
-  <section class="py-16 px-4 bg-white">
+  <section class="py-14 px-4 bg-white md:py-18">
     <div class="max-w-7xl mx-auto">
-      <div class="flex items-end justify-between gap-4 mb-8">
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8">
         <div>
           <p class="text-amber-700 text-xs font-semibold uppercase tracking-widest mb-2">You may also like</p>
           <h2 class="text-3xl md:text-4xl font-bold text-green-900" style="font-family:'Playfair Display',serif">Related Products</h2>
         </div>
-        <a href="{{ route('home') }}#{{ $product->category?->slug }}" class="text-sm font-semibold text-green-700 hover:text-amber-700 transition-colors">View category →</a>
+        <a href="{{ route('home') }}#{{ $product->category?->slug }}" class="text-sm font-semibold text-green-700 transition-colors hover:text-amber-700">View category →</a>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
         @foreach ($relatedProducts as $relatedProduct)
           <a href="{{ route('products.show', $relatedProduct->slug) }}" class="product-card bg-[#faf6ef] rounded-3xl overflow-hidden shadow-sm border border-[#efe5d6] block">
             <div class="h-52 bg-white flex items-center justify-center p-4">
