@@ -101,6 +101,7 @@ class WhatsAppWebhookService
             [
                 'name' => Arr::get($value, 'contacts.0.profile.name'),
                 'whatsapp_id' => $from,
+                'preferred_language' => 'en',
                 'last_message_at' => now(),
             ]
         );

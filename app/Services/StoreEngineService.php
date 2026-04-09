@@ -632,6 +632,7 @@ class StoreEngineService
     {
         return DB::transaction(function () use ($store, $customer, $conversation, $product, $quantity) {
             $cart = $this->activeCart($store, $customer, $conversation);
+            $unitPrice = (float) ($product->sale_price ?? $product->price ?? 0);
 
             $available = max($product->inventory_quantity, 1);
             $quantity = max(1, min($quantity, $available));
@@ -646,8 +647,8 @@ class StoreEngineService
 
             $item->fill([
                 'quantity' => $newQuantity,
-                'unit_price' => $product->sale_price,
-                'total_price' => $product->sale_price * $newQuantity,
+                'unit_price' => $unitPrice,
+                'total_price' => $unitPrice * $newQuantity,
             ])->save();
 
             return $this->refreshCartTotals($cart);
@@ -685,12 +686,14 @@ class StoreEngineService
                 ->delete();
 
             foreach ($items as $item) {
+                $unitPrice = (float) ($item['product']->sale_price ?? $item['product']->price ?? 0);
+
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $item['product']->id,
                     'quantity' => $item['quantity'],
-                    'unit_price' => $item['product']->sale_price,
-                    'total_price' => $item['product']->sale_price * $item['quantity'],
+                    'unit_price' => $unitPrice,
+                    'total_price' => $unitPrice * $item['quantity'],
                 ]);
             }
 

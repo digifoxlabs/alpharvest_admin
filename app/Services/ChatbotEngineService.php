@@ -991,6 +991,8 @@ class ChatbotEngineService
 
         // ✅ Save pincode
         $this->storeEngine->saveCustomerPincode($customer, $pincode);
+        $customer->preferred_language = $customer->preferred_language ?: 'en';
+        $customer->pincode = $pincode;
 
         // ✅ Clear state
         $this->setConversationContext($conversation, [
