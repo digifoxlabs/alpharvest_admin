@@ -4,17 +4,17 @@
     "name": "module.esm"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin-CSztyK4v.css",
+    "file": "assets/admin-dgNejbF6.css",
     "src": "resources/css/admin.css",
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-Cc1wwSLT.css",
+    "file": "assets/app-CCFRpRZp.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/website.css": {
-    "file": "assets/website-tR-2DZz1.css",
+    "file": "assets/website-DhN_rU1Y.css",
     "src": "resources/css/website.css",
     "isEntry": true
   },

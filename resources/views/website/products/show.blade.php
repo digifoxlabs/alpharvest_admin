@@ -105,8 +105,14 @@
           <span class="product-price-current">₹{{ number_format($product->display_price, 2) }}</span>
         </div>
 
-        <p class="mt-6 text-base leading-8 text-gray-600">
-          {{ $product->description ?: 'This product is part of our carefully selected collection, packed to bring authentic flavour and quality to your table.' }}
+        <p class="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-green-700">From Alp Harvest</p>
+
+        <p class="mt-4 text-base leading-8 text-gray-600">
+          {{ $product->name }} is part of our Assam collection. It is packed with care for freshness and everyday cooking.
+        </p>
+
+        <p class="mt-4 text-base leading-8 text-gray-600">
+          {{ $product->description ?: 'This product is carefully selected. It is packed for freshness. It is made for everyday cooking and authentic flavor.' }}
         </p>
 
         <div class="product-stats-grid mt-8">

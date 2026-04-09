@@ -8,7 +8,7 @@
     $metaImage = $__env->yieldContent('meta_image', asset('images/logo.jpeg'));
     $canonicalUrl = $__env->yieldContent('canonical_url', $currentUrl);
     $robotsContent = trim($__env->yieldContent('meta_robots', 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'));
-    $inLanguage = str_replace('_', '-', app()->getLocale());
+    $inLanguage = 'en';
     $structuredData = [
         [
             '@context' => 'https://schema.org',
@@ -28,7 +28,7 @@
                     'email' => 'as.alpharvest@gmail.com',
                     'telephone' => '+919181081090',
                     'areaServed' => 'IN',
-                    'availableLanguage' => ['en-IN', 'en'],
+                    'availableLanguage' => ['en'],
                 ],
             ],
         ],
@@ -37,7 +37,7 @@
             '@type' => 'WebSite',
             'name' => $siteName,
             'url' => $siteUrl,
-            'inLanguage' => 'en-IN',
+            'inLanguage' => 'en',
         ],
         [
             '@context' => 'https://schema.org',
@@ -45,7 +45,7 @@
             'name' => $metaTitle,
             'url' => $canonicalUrl,
             'description' => $metaDescription,
-            'inLanguage' => 'en-IN',
+            'inLanguage' => 'en',
             'isPartOf' => [
                 '@type' => 'WebSite',
                 'name' => $siteName,
@@ -98,7 +98,7 @@
 
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="author" content="{{ $siteName }}">
-    <meta name="language" content="English">
+    <meta http-equiv="content-language" content="en">
     <meta name="geo.region" content="IN-AS">
     <meta name="geo.placename" content="Guwahati, Assam, India">
     <meta name="geo.position" content="26.103678;91.694010">
@@ -123,7 +123,7 @@
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:image" content="{{ $metaImage }}">
     <meta property="og:site_name" content="{{ $siteName }}">
-    <meta property="og:locale" content="en_IN">
+    <meta property="og:locale" content="en_US">
     <meta property="og:image:alt" content="{{ $metaTitle }}">
 
     <meta name="twitter:card" content="summary_large_image">

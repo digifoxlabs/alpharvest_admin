@@ -35,13 +35,13 @@
   <div class="text-center text-white max-w-3xl mx-auto relative z-10">
     <div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-sm text-green-100 mb-6 backdrop-blur-sm border border-white/10">
       <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
-      Browse our products and place your order instantly via WhatsApp
+      Browse organic foods from Assam and place your order on WhatsApp
     </div>
     <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight" style="font-family:'Playfair Display',serif">
      Alp Harvest,<br/><span class="text-amber-400">Taste of Assam</span>
     </h1>
     <p class="text-green-100 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-relaxed">
-      Handpicked ethnic rice varieties, cold-pressed mustard oil &amp; traditional pickles — straight from the Heartland of Assam.
+      Alp Harvest brings you organic foods from Assam. Taste of Assam lives in every grain, bottle, and jar we pack.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <a href="#products" class="bg-amber-500 hover:bg-amber-400 text-white px-8 py-3.5 rounded-full font-semibold transition-colors shadow-lg shadow-amber-900/30">Explore Products</a>
