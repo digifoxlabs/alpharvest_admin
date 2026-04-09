@@ -33,14 +33,14 @@
             <!-- Form -->
             <div class="flex flex-col flex-1 w-full lg:w-1/2">
                 <div class="w-full max-w-md pt-10 mx-auto">
-                    <a href="{{ route('admin.dashboard') }}"
+                    <a href="/"
                         class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                         <svg class="stroke-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                             viewBox="0 0 20 20" fill="none">
                             <path d="M12.7083 5L7.5 10.2083L12.7083 15.4167" stroke="" stroke-width="1.5"
                                 stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        Back to dashboard
+                        Back to website
                     </a>
                 </div>
                 <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -55,7 +55,7 @@
                             </p>
                         </div>
                         <div>
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+                            {{-- <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
                                 <button
                                     class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -85,15 +85,15 @@
 
                                     Sign in with X
                                 </button>
-                            </div>
-                            <div class="relative py-3 sm:py-5">
+                            </div> --}}
+                            {{-- <div class="relative py-3 sm:py-5">
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="w-full border-t border-gray-200 dark:border-gray-800"></div>
                                 </div>
                                 <div class="relative flex justify-center text-sm">
                                     <span class="p-2 text-gray-400 bg-white dark:bg-gray-900 sm:px-5 sm:py-2">Or</span>
                                 </div>
-                            </div>
+                            </div> --}}
                             <form method="POST" action="{{ route('login.attempt') }}">
                                 @csrf
                                 <div class="space-y-5">
@@ -162,9 +162,9 @@
                                                 Keep me logged in
                                             </label>
                                         </div>
-                                        <a href="#"
+                                        {{-- <a href="#"
                                             class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">Forgot
-                                            password?</a>
+                                            password?</a> --}}
                                     </div>
                                     <!-- Button -->
                                     <div>
@@ -176,12 +176,12 @@
                                 </div>
                             </form>
                             <div class="mt-5">
-                                <p
+                                {{-- <p
                                     class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                                     Don't have an account?
                                     <a href="#"
                                         class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign Up</a>
-                                </p>
+                                </p> --}}
                             </div>
                         </div>
                     </div>
@@ -192,15 +192,15 @@
                 <div class="flex items-center justify-center z-1">
                     <!-- ===== Common Grid Shape Start ===== -->
                     <div class="absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]">
-                        <img src="src/images/shape/grid-01.svg" alt="grid" />
+                        <img src="{{ asset('images/admin/src/images/shape/grid-01.svg') }}" alt="grid" />
                     </div>
                     <div class="absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]">
-                        <img src="src/images/shape/grid-01.svg" alt="grid" />
+                        <img src="{{ asset('images/admin/src/images/shape/grid-01.svg') }}" alt="grid" />
                     </div>
 
                     <div class="flex flex-col items-center max-w-xs">
                         <a href="#" class="block mb-4">
-                            <img src="{{ asset('images/logo.jpeg') }} alt="Logo" />
+                            <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
                             Alp Harvest | Admin Panel

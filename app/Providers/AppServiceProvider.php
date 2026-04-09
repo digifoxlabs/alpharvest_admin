@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $appUrl = (string) config('app.url');
 
-        if ($appUrl !== '') {
+        if ($appUrl !== '' && ($this->app->runningInConsole() || $this->app->environment('production'))) {
             URL::forceRootUrl($appUrl);
 
             if (Str::startsWith($appUrl, 'https://')) {
