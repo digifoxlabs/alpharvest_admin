@@ -253,9 +253,9 @@ body::before {
 
 .product-hero {
   background:
-    radial-gradient(circle at top right, rgba(200, 146, 42, 0.16), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(45, 90, 39, 0.14), transparent 34%),
-    linear-gradient(180deg, #fffdf8 0%, #f4ede2 100%);
+    radial-gradient(circle at top right, rgba(200, 146, 42, 0.18), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(120, 67, 21, 0.22), transparent 34%),
+    linear-gradient(180deg, #28461f 0%, #3f5f2d 16%, #6b5327 42%, #efe3d0 100%);
 }
 
 .product-gallery-card {

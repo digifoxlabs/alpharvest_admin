@@ -1,21 +1,35 @@
 @extends('layouts.website')
 
+@php
+  $productMetaDescription = \Illuminate\Support\Str::limit(
+      $product->description ?: ('Buy ' . $product->name . ' from Alp Harvest. Explore authentic products from Assam with transparent pricing and direct enquiry support.'),
+      155
+  );
+  $productStructuredDescription = $product->description ?: 'Authentic food product from Alp Harvest.';
+  $productStructuredImage = $product->image_url ?: asset('images/logo.jpeg');
+  $productStructuredUrl = route('products.show', $product->slug);
+  $productStructuredPrice = number_format($product->display_price, 2, '.', '');
+  $productStructuredAvailability = $product->inventory_quantity > 0
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
+@endphp
+
 @section('title', $product->name)
 @section('meta_title', $product->name . ' | Alp Harvest')
-@section('meta_description', \Illuminate\Support\Str::limit($product->description ?: ('Buy ' . $product->name . ' from Alp Harvest. Explore authentic products from Assam with transparent pricing and direct enquiry support.'), 155))
-@section('canonical_url', route('products.show', $product->slug))
-@section('meta_image', $product->image_url ?: asset('images/logo.jpeg'))
+@section('meta_description', $productMetaDescription)
+@section('canonical_url', $productStructuredUrl)
+@section('meta_image', $productStructuredImage)
 @section('structured_data')
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": @json($product->name),
-    "description": @json($product->description ?: 'Authentic food product from Alp Harvest.'),
-    "image": [@json($product->image_url ?: asset('images/logo.jpeg'))],
+    "description": @json($productStructuredDescription),
+    "image": [@json($productStructuredImage)],
     "sku": @json($product->sku),
     "category": @json($product->category?->name),
-    "url": @json(route('products.show', $product->slug)),
+    "url": @json($productStructuredUrl),
     "brand": {
       "@type": "Brand",
       "name": "Alp Harvest"
@@ -23,9 +37,9 @@
     "offers": {
       "@type": "Offer",
       "priceCurrency": "INR",
-      "price": @json(number_format($product->display_price, 2, '.', '')),
-      "availability": @json($product->inventory_quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'),
-      "url": @json(route('products.show', $product->slug))
+      "price": @json($productStructuredPrice),
+      "availability": @json($productStructuredAvailability),
+      "url": @json($productStructuredUrl)
     }
   }
 </script>

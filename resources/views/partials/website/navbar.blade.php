@@ -6,6 +6,10 @@
       'pickle' => '🫙',
       'default' => '🛍️',
   ];
+  $homeUrl = route('home');
+  $homeSectionUrl = $homeUrl . '#home';
+  $productsSectionUrl = $homeUrl . '#products';
+  $contactSectionUrl = $homeUrl . '#contact';
 @endphp
 
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-3 px-4 md:px-8">
@@ -19,14 +23,14 @@
     </button>
 
     <!-- Logo (always centred) -->
-    <a href="#home" class="absolute left-1/2 -translate-x-1/2 group">
-      <img src="images/logo.jpeg" alt="Alp Harvest"
+    <a href="{{ $homeSectionUrl }}" class="absolute left-1/2 -translate-x-1/2 group">
+      <img src="{{ asset('images/logo.jpeg') }}" alt="Alp Harvest"
            class="h-14 md:h-20 w-auto shadow-lg object-contain transition-opacity group-hover:opacity-90" />
     </a>
 
     <!-- Desktop nav links (right) -->
     <div class="hidden md:flex items-center gap-8 ml-auto">
-      <a href="#home" class="nav-link">Home</a>
+      <a href="{{ $homeSectionUrl }}" class="nav-link">Home</a>
 
       <!-- Products – level 1 dropdown -->
       <div class="dropdown relative">
@@ -70,7 +74,7 @@
         </div>
       </div>
 
-      <a href="#contact" class="nav-link">Contact Us</a>
+      <a href="{{ $contactSectionUrl }}" class="nav-link">Contact Us</a>
     </div>
 
     <!-- Mobile right spacer -->
@@ -84,7 +88,7 @@
 <!-- Mobile Drawer -->
 <aside id="mobile-drawer" class="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl flex flex-col">
   <div class="hero-pattern px-6 pt-8 pb-6 flex items-center gap-3">
-    <img src="images/logo.jpeg" alt="Alp Harvest" class="w-10 h-10  object-cover flex-shrink-0" />
+    <img src="{{ asset('images/logo.jpeg') }}" alt="Alp Harvest" class="w-10 h-10 object-cover flex-shrink-0" />
     <div>
       <div class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">Alp Harvest</div>
       <div class="text-xs text-green-200">Pure from the Hills</div>
@@ -94,7 +98,7 @@
     </button>
   </div>
   <div class="flex-1 overflow-y-auto py-4 px-2">
-    <a href="#home" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 text-green-900 font-medium transition-colors">🏠 Home</a>
+    <a href="{{ $homeSectionUrl }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 text-green-900 font-medium transition-colors">🏠 Home</a>
 
     <!-- Products accordion -->
     <div>
@@ -135,6 +139,6 @@
       </div>
     </div>
 
-    <a href="#contact" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 text-green-900 font-medium transition-colors">📞 Contact Us</a>
+    <a href="{{ $contactSectionUrl }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 text-green-900 font-medium transition-colors">📞 Contact Us</a>
   </div>
 </aside>

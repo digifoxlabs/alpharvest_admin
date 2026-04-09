@@ -147,7 +147,7 @@
                   @endif
                   <span class="text-amber-700 font-bold text-lg">₹{{ number_format($product->display_price, 2) }}</span>
                 </div>
-                <span class="text-xs font-semibold text-green-700">View</span>
+                {{-- <span class="text-xs font-semibold text-green-700">View</span> --}}
               </div>
             </div>
           </a>
