@@ -44,7 +44,7 @@
   <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-green-200 text-sm">
 
     <div class="flex items-center gap-2">
-      <img src="images/logo.jpeg" alt="Alp Harvest" class="w-8 h-8 object-cover" />
+      <img src="{{ asset('images/logo.jpeg') }}" alt="Alp Harvest" class="w-8 h-8 object-cover" />
       <span class="text-white font-bold" style="font-family:'Playfair Display',serif">
         Alp Harvest
       </span>
