@@ -91,6 +91,7 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="google-site-verification" content="LATOVN6depHTe9ClG71SCmDa2YWm7hmRQZqD9XxyW0o" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ $metaTitle }}</title>
     @vite(['resources/css/website.css','resources/js/website.js'])
