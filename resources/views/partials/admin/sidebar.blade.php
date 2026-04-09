@@ -3,8 +3,8 @@
     <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="flex items-center gap-2 pt-8 sidebar-header pb-7">
         <a href="{{ route('admin.dashboard') }}">
             <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-                <img class="dark:hidden" src="{{ asset('images/admin/src/images/logo/logo.svg') }}" alt="Logo" />
-                <img class="hidden dark:block" src="{{ asset('images/admin/src/images/logo/logo-dark.svg') }}" alt="Logo" />
+                <img class="dark:hidden" src="{{ asset('images/admin/src/images/logo/logo-alpharvest.svg') }}" alt="Logo" />
+                <img class="hidden dark:block" src="{{ asset('images/admin/src/images/logo/logo-alpharvest-dark.svg') }}" alt="Logo" />
             </span>
 
             <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'" src="{{ asset('images/admin/src/images/logo/logo-icon.svg') }}"
@@ -25,6 +25,15 @@
                             <a href="{{ route('admin.dashboard') }}"
                                 class="menu-item {{ request()->routeIs('admin.dashboard') ? 'menu-item-active' : 'menu-item-inactive' }}">
                                 <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Dashboard</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('view customers')
+                        <li>
+                            <a href="{{ route('admin.customers.index') }}"
+                                class="menu-item {{ request()->routeIs('admin.customers.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Customers</span>
                             </a>
                         </li>
                     @endcan
@@ -67,10 +76,10 @@
                         </li>
                     @endcanany
 
-                    @canany(['view stores', 'view products', 'view categories', 'view orders', 'view chats', 'view templates'])
+                    @canany(['view stores', 'view products', 'view categories', 'view inventory', 'view orders', 'view chats', 'view templates'])
                         <li>
                             <a href="#" @click.prevent="selected = selected === 'modules' ? '' : 'modules'"
-                                class="menu-item {{ request()->routeIs('admin.stores.*') || request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.orders.*') || request()->routeIs('admin.messages.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                                class="menu-item {{ request()->routeIs('admin.stores.*') || request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.inventory.*') || request()->routeIs('admin.orders.*') || request()->routeIs('admin.messages.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                                 <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Business Modules</span>
                             </a>
 
@@ -97,6 +106,14 @@
                                             <a href="{{ route('admin.categories.index') }}"
                                                 class="menu-dropdown-item {{ request()->routeIs('admin.categories.*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}">
                                                 Categories
+                                            </a>
+                                        </li>
+                                    @endcan
+                                    @can('view inventory')
+                                        <li>
+                                            <a href="{{ route('admin.inventory.index') }}"
+                                                class="menu-dropdown-item {{ request()->routeIs('admin.inventory.*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}">
+                                                Inventory
                                             </a>
                                         </li>
                                     @endcan

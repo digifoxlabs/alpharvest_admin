@@ -68,6 +68,38 @@
             @error('undeliverable_message')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
         </div>
 
+        @php($orderNumbering = array_merge(['prefix' => strtoupper($store?->slug ?? 'ORD'), 'start_from' => 1, 'digits' => 5, 'type' => 'sequential'], (array) data_get($store?->settings, 'order_numbering', [])))
+        <div class="rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Order Numbering</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure how `StoreEngineService` generates the next order number for this store.</p>
+
+            <div class="mt-4 grid gap-5 md:grid-cols-4">
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Prefix</label>
+                    <input type="text" name="order_number_prefix" value="{{ old('order_number_prefix', $orderNumbering['prefix']) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    @error('order_number_prefix')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Start From</label>
+                    <input type="number" min="1" name="order_number_start_from" value="{{ old('order_number_start_from', $orderNumbering['start_from']) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    @error('order_number_start_from')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Digits</label>
+                    <input type="number" min="1" max="10" name="order_number_digits" value="{{ old('order_number_digits', $orderNumbering['digits']) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    @error('order_number_digits')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Numbering Type</label>
+                    <select name="order_number_type" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <option value="sequential" @selected(old('order_number_type', $orderNumbering['type']) === 'sequential')>Sequential</option>
+                        <option value="random" @selected(old('order_number_type', $orderNumbering['type']) === 'random')>Random</option>
+                    </select>
+                    @error('order_number_type')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+            </div>
+        </div>
+
         <div class="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
             <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
                 <p class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Store Image Preview</p>

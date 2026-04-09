@@ -62,6 +62,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
     public function getImageUrlAttribute(): ?string
     {
         if (! $this->image_path) {

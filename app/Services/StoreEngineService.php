@@ -19,6 +19,11 @@ use Illuminate\Support\Str;
 
 class StoreEngineService
 {
+    public function __construct(
+        protected OrderWorkflowService $orderWorkflowService
+    ) {
+    }
+
     public function catalogPayload(Store $store): array
     {
         $categories = $store->categories()
@@ -766,13 +771,14 @@ class StoreEngineService
                 'conversation_id' => $conversation?->id,
                 'cart_id' => $cart->id,
                 'order_number' => $this->nextOrderNumber($store),
-                'status' => 'pending_payment',
-                'payment_status' => 'unpaid',
+                'status' => 'pending',
+                'payment_status' => 'pending',
                 'currency' => $store->currency,
                 'subtotal' => $cart->subtotal,
                 'total' => $cart->total,
                 'metadata' => [
                     'delivery' => $this->deliveryDetails($customer),
+                    'public_token' => Str::lower(Str::random(32)),
                 ],
                 'placed_at' => now(),
             ]);
@@ -812,11 +818,9 @@ class StoreEngineService
             ]),
         ]);
 
-        $status = data_get($metadata, 'delivery.pincode') ? 'pending_payment' : 'awaiting_address';
-
         $order->forceFill([
-            'status' => $status,
-            'payment_status' => $order->payment_status ?: 'unpaid',
+            'status' => 'pending',
+            'payment_status' => $order->payment_status ?: 'pending',
             'metadata' => $metadata,
         ])->save();
 
@@ -875,7 +879,7 @@ class StoreEngineService
         data_set($metadata, 'admin_follow_up.address_received_at', now()->toIso8601String());
 
         $order->forceFill([
-            'status' => 'pending_payment',
+            'status' => 'pending',
             'metadata' => $metadata,
         ])->save();
 
@@ -949,11 +953,7 @@ class StoreEngineService
 
     protected function nextOrderNumber(Store $store): string
     {
-        $count = Order::query()
-            ->where('store_id', $store->id)
-            ->count() + 1;
-
-        return strtoupper($store->slug) . '-' . str_pad((string) $count, 5, '0', STR_PAD_LEFT);
+        return $this->orderWorkflowService->generateOrderNumber($store);
     }
 
 

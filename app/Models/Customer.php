@@ -46,4 +46,21 @@ class Customer extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function getDeliveryAddressLinesAttribute(): array
+    {
+        return collect(data_get($this->metadata, 'delivery.address_book', []))
+            ->map(function (array $address) {
+                $parts = array_filter([
+                    $address['pincode'] ?? null,
+                    $address['city'] ?? null,
+                    $address['address'] ?? null,
+                ]);
+
+                return implode(' | ', $parts);
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
 }

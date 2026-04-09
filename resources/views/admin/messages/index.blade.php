@@ -123,7 +123,10 @@
                                     {{ $message->status_label }}
                                 </span>
                                 @if ($message->status_detail)
-                                    <p class="mt-2 max-w-xs text-xs text-gray-500 dark:text-gray-400">{{ $message->status_detail }}</p>
+                                    <details class="mt-2 max-w-xs text-xs text-gray-500 dark:text-gray-400">
+                                        <summary class="cursor-pointer">{{ \Illuminate\Support\Str::limit($message->status_detail, 70) }}</summary>
+                                        <p class="mt-2 whitespace-pre-wrap">{{ $message->status_detail }}</p>
+                                    </details>
                                 @endif
                             </td>
                             <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">

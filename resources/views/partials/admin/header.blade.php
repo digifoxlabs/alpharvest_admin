@@ -33,8 +33,8 @@
             </button>
 
             <a href="{{ route('admin.dashboard') }}" class="lg:hidden">
-                <img class="dark:hidden" src="{{ asset('images/admin/src/images/logo/logo.svg') }}" alt="Logo" />
-                <img class="hidden dark:block" src="{{ asset('images/admin/src/images/logo/logo-dark.svg') }}" alt="Logo" />
+                <img class="dark:hidden" src="{{ asset('images/admin/src/images/logo/logo-alpharvest.svg') }}" alt="Logo" />
+                <img class="hidden dark:block" src="{{ asset('images/admin/src/images/logo/logo-alpharvest-dark.svg') }}" alt="Logo" />
             </a>
 
             <button

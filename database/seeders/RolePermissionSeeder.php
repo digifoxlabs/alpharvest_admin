@@ -33,6 +33,11 @@ class RolePermissionSeeder extends Seeder
             'create orders',
             'edit orders',
             'delete orders',
+            'view inventory',
+            'create inventory',
+            'view customers',
+            'edit customers',
+            'delete customers',
             'view chats',
             'create chats',
             'edit chats',
@@ -78,6 +83,8 @@ class RolePermissionSeeder extends Seeder
             'view users',
             'view products',
             'view orders',
+            'view inventory',
+            'view customers',
         ]);
 
         $adminUserData = [

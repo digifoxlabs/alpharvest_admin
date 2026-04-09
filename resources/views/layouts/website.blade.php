@@ -146,7 +146,9 @@
         @yield('content')
     </main>
 
-    @include('partials.website.footer')
+    @unless(trim($__env->yieldContent('hide_footer', '')))
+        @include('partials.website.footer')
+    @endunless
 </body>
 
 </html>

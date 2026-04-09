@@ -65,4 +65,10 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class, 'source_id')
+            ->where('source_type', static::class);
+    }
 }

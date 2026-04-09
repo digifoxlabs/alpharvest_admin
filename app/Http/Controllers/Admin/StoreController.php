@@ -104,6 +104,10 @@ class StoreController extends Controller
             'whatsapp_contact_text' => ['nullable', 'string'],
             'delivery_zones_text' => ['nullable', 'string'],
             'undeliverable_message' => ['nullable', 'string', 'max:1024'],
+            'order_number_prefix' => ['nullable', 'string', 'max:50'],
+            'order_number_start_from' => ['nullable', 'integer', 'min:1'],
+            'order_number_digits' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'order_number_type' => ['nullable', Rule::in(['sequential', 'random'])],
             'whatsapp_store_image' => ['nullable', 'image', 'max:4096'],
             'cropped_whatsapp_store_image' => ['nullable', 'string'],
             'remove_whatsapp_store_image' => ['nullable', 'boolean'],
@@ -142,9 +146,25 @@ class StoreController extends Controller
         $message = trim((string) ($validated['undeliverable_message'] ?? ''));
         $settings['undeliverable_message'] = $message !== '' ? $message : null;
 
+        $existingNumbering = (array) data_get($settings, 'order_numbering', []);
+        $settings['order_numbering'] = [
+            'prefix' => trim((string) ($validated['order_number_prefix'] ?? ($existingNumbering['prefix'] ?? ''))),
+            'start_from' => max((int) ($validated['order_number_start_from'] ?? ($existingNumbering['start_from'] ?? 1)), 1),
+            'digits' => max((int) ($validated['order_number_digits'] ?? ($existingNumbering['digits'] ?? 5)), 1),
+            'type' => $validated['order_number_type'] ?? ($existingNumbering['type'] ?? 'sequential'),
+            'next_sequence' => max((int) ($existingNumbering['next_sequence'] ?? ($validated['order_number_start_from'] ?? 1)), 1),
+        ];
+
         $validated['settings'] = $settings;
 
-        unset($validated['delivery_zones_text'], $validated['undeliverable_message']);
+        unset(
+            $validated['delivery_zones_text'],
+            $validated['undeliverable_message'],
+            $validated['order_number_prefix'],
+            $validated['order_number_start_from'],
+            $validated['order_number_digits'],
+            $validated['order_number_type']
+        );
 
         return $validated;
     }

@@ -201,6 +201,44 @@ class WhatsAppCloudApiService
         ]);
     }
 
+    public function sendCallToActionUrlMessage(
+        Store $store,
+        Customer $customer,
+        string $body,
+        string $buttonText,
+        string $url,
+        ?string $footer = null,
+        ?string $headerText = null
+    ): array {
+        $interactive = [
+            'type' => 'cta_url',
+            'body' => ['text' => $this->fitInteractiveBody($body)],
+            'action' => [
+                'name' => 'cta_url',
+                'parameters' => [
+                    'display_text' => $this->fitInteractiveButtonTitle($buttonText),
+                    'url' => $url,
+                ],
+            ],
+        ];
+
+        if ($footer) {
+            $interactive['footer'] = ['text' => $this->fitInteractiveFooter($footer)];
+        }
+
+        if ($headerText) {
+            $interactive['header'] = [
+                'type' => 'text',
+                'text' => $this->fitInteractiveHeader($headerText),
+            ];
+        }
+
+        return $this->dispatch($store, $customer, [
+            'type' => 'interactive',
+            'interactive' => $interactive,
+        ]);
+    }
+
     public function sendStructuredMessage(Store $store, Customer $customer, array $message): array
     {
         return match ($message['kind'] ?? 'text') {
@@ -237,6 +275,15 @@ class WhatsAppCloudApiService
                 $customer,
                 $message['body'],
                 $message['footer'] ?? null
+            ),
+            'cta_url' => $this->sendCallToActionUrlMessage(
+                $store,
+                $customer,
+                $message['body'],
+                $message['button_text'] ?? 'Open',
+                $message['url'],
+                $message['footer'] ?? null,
+                $message['header_text'] ?? null
             ),
             'product_list' => $this->sendMultiProductMessage(
                 $store,

@@ -29,12 +29,12 @@
                 <tbody>
                     @forelse ($orders as $order)
                         <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="px-5 py-4"><div class="font-medium text-gray-800 dark:text-white/90">{{ $order->order_number }}</div><div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->currency }} | {{ optional($order->placed_at)->format('Y-m-d H:i') ?: 'Not placed' }}</div></td>
+                            <td class="px-5 py-4"><div class="font-medium text-gray-800 dark:text-white/90"><a href="{{ route('admin.orders.show', $order) }}" class="text-brand-600 hover:underline">{{ $order->order_number }}</a></div><div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->currency }} | {{ optional($order->placed_at)->format('Y-m-d H:i') ?: 'Not placed' }}</div></td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ ucfirst($order->status) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ ucfirst($order->payment_status) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ number_format((float) $order->total, 2) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $order->items_count }}</td>
-                            <td class="px-5 py-4"><div class="flex flex-wrap gap-2">@can('edit orders')<a href="{{ route('admin.orders.edit', $order) }}" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Edit</a>@endcan @can('delete orders')<form action="{{ route('admin.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Delete this order?')">@csrf @method('DELETE')<button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button></form>@endcan</div></td>
+                            <td class="px-5 py-4"><div class="flex flex-wrap gap-2">@can('view orders')<a href="{{ route('admin.orders.show', $order) }}" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">View</a>@endcan @can('delete orders')<form action="{{ route('admin.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Delete this order?')">@csrf @method('DELETE')<button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button></form>@endcan</div></td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">No orders found.</td></tr>

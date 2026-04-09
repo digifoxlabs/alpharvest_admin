@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FeedController;
+use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PermissionManagementController;
@@ -11,8 +12,10 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleManagementController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Website\HomeController;
+use App\Http\Controllers\Website\OrderTrackingController;
 use App\Http\Controllers\Website\SeoController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +25,7 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap
 Route::get('/robots.xml', [SeoController::class, 'robotsXml'])->name('seo.robots-xml');
 
 Route::get('/payments/{payment:reference}', [PaymentController::class, 'show'])->name('payments.show');
+Route::get('/orders/track/{token}', [OrderTrackingController::class, 'show'])->name('orders.track');
 
 Route::get('/feeds/meta-products', [FeedController::class, 'metaProducts'])->name('feeds.meta-products');
 Route::get('/feeds/meta-placeholder.svg', [FeedController::class, 'metaPlaceholder'])->name('feeds.meta-placeholder');
@@ -44,6 +48,9 @@ Route::prefix('admin')
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->middleware('permission:view dashboard')
             ->name('dashboard');
+        Route::get('/dashboard/export/orders', [DashboardController::class, 'export'])
+            ->middleware('permission:view dashboard')
+            ->name('dashboard.export.orders');
 
         Route::prefix('stores')->name('stores.')->group(function () {
             Route::get('/', [StoreController::class, 'index'])->middleware('permission:view stores')->name('index');
@@ -76,9 +83,24 @@ Route::prefix('admin')
             Route::get('/', [OrderController::class, 'index'])->middleware('permission:view orders')->name('index');
             Route::get('/create', [OrderController::class, 'create'])->middleware('permission:create orders')->name('create');
             Route::post('/', [OrderController::class, 'store'])->middleware('permission:create orders')->name('store');
+            Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('show');
             Route::get('/{order}/edit', [OrderController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
             Route::put('/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('update');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+        });
+
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [InventoryController::class, 'index'])->middleware('permission:view inventory')->name('index');
+            Route::get('/create', [InventoryController::class, 'create'])->middleware('permission:create inventory')->name('create');
+            Route::post('/', [InventoryController::class, 'store'])->middleware('permission:create inventory')->name('store');
+        });
+
+        Route::prefix('customers')->name('customers.')->group(function () {
+            Route::get('/', [CustomerController::class, 'index'])->middleware('permission:view customers')->name('index');
+            Route::get('/{customer}', [CustomerController::class, 'show'])->middleware('permission:view customers')->name('show');
+            Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->middleware('permission:edit customers')->name('edit');
+            Route::put('/{customer}', [CustomerController::class, 'update'])->middleware('permission:edit customers')->name('update');
+            Route::delete('/{customer}', [CustomerController::class, 'destroy'])->middleware('permission:delete customers')->name('destroy');
         });
 
         Route::prefix('messages')->name('messages.')->group(function () {
