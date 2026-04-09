@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\ProductCategory;
 use App\Models\Product;
 use App\Observers\ProductObserver;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -24,6 +26,21 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Product::observe(ProductObserver::class);
+
+        View::composer('partials.website.navbar', function ($view): void {
+            $navbarCategories = ProductCategory::query()
+                ->where('is_active', true)
+                ->with([
+                    'products' => fn ($query) => $query
+                        ->where('is_active', true)
+                        ->orderBy('name'),
+                ])
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get();
+
+            $view->with('navbarCategories', $navbarCategories);
+        });
 
         Permission::created(function (Permission $permission): void {
             $adminRole = Role::query()

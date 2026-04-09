@@ -1,11 +1,33 @@
 @extends('layouts.website')
 
 @section('title','Home')
+@section('meta_title', 'Alp Harvest | Organic Ethnic Rice, Mustard Oil and Pickles from Assam')
+@section('meta_description', 'Shop Alp Harvest for organic ethnic rice, cold-pressed mustard oil, and traditional Assamese pickles. Explore featured products and authentic regional staples from Assam.')
+@section('canonical_url', route('home'))
+@section('meta_image', asset('images/logo.jpeg'))
+@section('structured_data')
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Alp Harvest Home",
+    "url": "{{ route('home') }}",
+    "description": "Featured products and category-wise listings of Alp Harvest organic food products."
+  }
+</script>
+@endsection
 
 @section('content')
+@php
+  $productFallbackImage = asset('images/products/pickle.jpeg');
 
-
-
+  $categoryStyles = [
+      'rice' => ['icon' => '🌾', 'iconBg' => 'bg-green-800', 'lineBg' => 'bg-green-200', 'badgeClass' => 'text-green-600'],
+      'oil' => ['icon' => '🫒', 'iconBg' => 'bg-amber-700', 'lineBg' => 'bg-amber-200', 'badgeClass' => 'text-amber-600'],
+      'pickle' => ['icon' => '🫙', 'iconBg' => 'bg-red-700', 'lineBg' => 'bg-red-200', 'badgeClass' => 'text-red-600'],
+      'default' => ['icon' => '🛍️', 'iconBg' => 'bg-green-900', 'lineBg' => 'bg-green-200', 'badgeClass' => 'text-green-700'],
+  ];
+@endphp
 
 <section id="home" class="hero-pattern min-h-screen flex items-center justify-center pt-20 pb-16 px-4 relative overflow-hidden">
   <div class="absolute top-20 right-0 w-96 h-96 rounded-full bg-white/5 -translate-y-1/4 translate-x-1/3"></div>
@@ -41,7 +63,6 @@
   </div>
 </section>
 
-<!-- ============================================================ CAROUSEL ============================================================ -->
 <section class="py-8 md:py-12 bg-white">
   <div class="max-w-6xl mx-auto px-4">
     <div class="carousel-wrapper relative overflow-hidden rounded-3xl shadow-2xl" style="height:360px">
@@ -52,7 +73,7 @@
               <p class="text-amber-300 text-sm font-medium uppercase tracking-widest mb-2">Heritage Grains</p>
               <h2 class="text-white text-3xl md:text-5xl font-bold mb-4 leading-tight" style="font-family:'Playfair Display',serif">Rare Ethnic Rice<br/>from Assam</h2>
               <p class="text-green-200 text-sm md:text-base mb-6">Ancient varieties preserving centuries of tradition.</p>
-              <a href="#ethnic-rice" class="inline-block bg-amber-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-amber-400 transition-colors">Shop Rice →</a>
+              <a href="#products" class="inline-block bg-amber-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-amber-400 transition-colors">Shop Rice →</a>
             </div>
             <div class="absolute right-4 bottom-0 opacity-10 text-9xl md:text-[160px] leading-none select-none pointer-events-none">🌾</div>
           </div>
@@ -63,7 +84,7 @@
               <p class="text-yellow-200 text-sm font-medium uppercase tracking-widest mb-2">Cold Pressed</p>
               <h2 class="text-white text-3xl md:text-5xl font-bold mb-4 leading-tight" style="font-family:'Playfair Display',serif">Majuli Pure<br/>Mustard Oil</h2>
               <p class="text-amber-100 text-sm md:text-base mb-6">Traditional cold-press from the island of Majuli.</p>
-              <a href="#mustard-oil" class="inline-block bg-green-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-green-600 transition-colors">Shop Oil →</a>
+              <a href="#products" class="inline-block bg-green-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-green-600 transition-colors">Shop Oil →</a>
             </div>
             <div class="absolute right-4 bottom-0 opacity-10 text-9xl md:text-[160px] leading-none select-none pointer-events-none">🫒</div>
           </div>
@@ -73,8 +94,8 @@
             <div class="pl-8 md:pl-16 max-w-md z-10">
               <p class="text-red-200 text-sm font-medium uppercase tracking-widest mb-2">Traditional Recipes</p>
               <h2 class="text-white text-3xl md:text-5xl font-bold mb-4 leading-tight" style="font-family:'Playfair Display',serif">Handcrafted<br/>Pickles</h2>
-              <p class="text-red-100 text-sm md:text-base mb-6">6 bold flavours — no preservatives, pure tradition.</p>
-              <a href="#pickles" class="inline-block bg-amber-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-amber-400 transition-colors">Shop Pickles →</a>
+              <p class="text-red-100 text-sm md:text-base mb-6">Bold flavours with no preservatives and all the nostalgia of home.</p>
+              <a href="#products" class="inline-block bg-amber-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-amber-400 transition-colors">Shop Pickles →</a>
             </div>
             <div class="absolute right-4 bottom-0 opacity-10 text-9xl md:text-[160px] leading-none select-none pointer-events-none">🫙</div>
           </div>
@@ -95,7 +116,6 @@
   </div>
 </section>
 
-<!-- ============================================================ FEATURED PRODUCTS ============================================================ -->
 <section class="py-14" style="background:var(--cream)">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex items-end justify-between mb-8 reveal">
@@ -106,48 +126,41 @@
       </div>
       <a href="#products" class="text-sm text-green-700 font-medium hover:text-amber-700 transition-colors hidden sm:block">View all →</a>
     </div>
-    <div class="featured-scroll">
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/black_rice.jpeg" alt="Black Joha Rice" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-green-600 uppercase tracking-wide">Ethnic Rice</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Black Joha Rice</h3><p class="text-xs text-gray-500 mt-1">Fragrant heirloom, GI-tagged from Assam</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹180<span class="text-xs font-normal text-gray-400">/kg</span></span></div></div>
+
+    @if ($featuredProducts->isNotEmpty())
+      <div class="featured-scroll">
+        @foreach ($featuredProducts as $product)
+          <a href="{{ route('products.show', $product->slug) }}" class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card block">
+            <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
+              <img src="{{ $product->image_url ?: $productFallbackImage }}" alt="{{ $product->name }}" class="h-full w-full object-contain drop-shadow-md" />
+            </div>
+            <div class="p-4">
+              <span class="text-xs font-semibold uppercase tracking-wide {{ str_contains(strtolower($product->category?->name ?? ''), 'oil') ? 'text-amber-600' : (str_contains(strtolower($product->category?->name ?? ''), 'pickle') ? 'text-red-600' : 'text-green-600') }}">
+                {{ $product->category?->name ?? 'Featured Product' }}
+              </span>
+              <h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">{{ $product->name }}</h3>
+              <p class="text-xs text-gray-500 mt-1">{{ \Illuminate\Support\Str::limit($product->description ?: 'Fresh from our curated selection.', 70) }}</p>
+              <div class="mt-3 flex items-end justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                  @if ($product->has_discount)
+                    <span class="text-sm text-gray-400 line-through">₹{{ number_format((float) $product->price, 2) }}</span>
+                  @endif
+                  <span class="text-amber-700 font-bold text-lg">₹{{ number_format($product->display_price, 2) }}</span>
+                </div>
+                <span class="text-xs font-semibold text-green-700">View</span>
+              </div>
+            </div>
+          </a>
+        @endforeach
       </div>
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/mustard_oil.jpeg" alt="Majuli Pure Mustard Oil" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-amber-600 uppercase tracking-wide">Mustard Oil</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Majuli Pure Mustard Oil</h3><p class="text-xs text-gray-500 mt-1">Cold-pressed, from river island Majuli</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹240<span class="text-xs font-normal text-gray-400">/L</span></span></div></div>
+    @else
+      <div class="rounded-3xl border border-dashed border-amber-300 bg-white/70 px-6 py-10 text-center text-gray-600">
+        Featured products are not available right now.
       </div>
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/pickle.jpeg" alt="Ghost Chilli Pickle" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-red-600 uppercase tracking-wide">Pickles</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Ghost Chilli Pickle</h3><p class="text-xs text-gray-500 mt-1">Bhut jolokia — fiery Naga recipe</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹135<span class="text-xs font-normal text-gray-400">/100g</span></span></div></div>
-      </div>
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/black_rice.jpeg" alt="Manipuri Black Rice" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-green-600 uppercase tracking-wide">Ethnic Rice</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Manipuri Black Rice</h3><p class="text-xs text-gray-500 mt-1">Antioxidant-rich forbidden rice</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹240<span class="text-xs font-normal text-gray-400">/kg</span></span></div></div>
-      </div>
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/pickle.jpeg" alt="Mango Pickle" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-red-600 uppercase tracking-wide">Pickles</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Mango Pickle</h3><p class="text-xs text-gray-500 mt-1">Raw mango in mustard oil — tangy &amp; spicy</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹55<span class="text-xs font-normal text-gray-400">/100g</span></span></div></div>
-      </div>
-      <div class="featured-card bg-white rounded-2xl overflow-hidden shadow-md product-card">
-        <div class="h-52 bg-gray-50 flex items-center justify-center p-4">
-          <img src="images/products/red_bau_rice.jpeg" alt="Red Bau Rice" class="h-full w-full object-contain drop-shadow-md" />
-        </div>
-        <div class="p-4"><span class="text-xs font-semibold text-green-600 uppercase tracking-wide">Ethnic Rice</span><h3 class="font-bold text-gray-800 mt-1 text-base" style="font-family:'Playfair Display',serif">Red Bau Rice</h3><p class="text-xs text-gray-500 mt-1">Nutty, earthy heirloom red rice</p><div class="flex items-center justify-between mt-3"><span class="text-amber-700 font-bold text-lg">₹120<span class="text-xs font-normal text-gray-400">/kg</span></span></div></div>
-      </div>
-    </div>
+    @endif
   </div>
 </section>
 
-<!-- ============================================================ ALL PRODUCTS ============================================================ -->
 <section id="products" class="py-16" style="background:#f3ede3">
   <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-14 reveal">
@@ -156,125 +169,66 @@
       <div class="leaf-divider mx-auto mt-4"></div>
     </div>
 
-    <!-- Ethnic Rice -->
-    <div id="ethnic-rice" class="mb-16 reveal">
-      <div class="flex items-center gap-4 mb-8">
-        <div class="w-12 h-12 bg-green-800 rounded-xl flex items-center justify-center text-2xl shadow-lg">🌾</div>
-        <div><h3 class="text-2xl md:text-3xl font-bold text-green-900" style="font-family:'Playfair Display',serif">Ethnic Rice</h3><p class="text-sm text-gray-500">Heirloom varieties from the valleys of Northeast India</p></div>
-        <div class="ml-4 hidden sm:block h-px bg-green-200 flex-1"></div>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/titabor_aijung_5kg.png" alt="Titabior Aijung" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Titabior Aijung</h4><p class="text-xs text-gray-400 mt-1">Aromatic heirloom</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹370/5kg</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/titabor_aijung.jpeg" alt="Titabior Aijung" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Titabior Aijung</h4><p class="text-xs text-gray-400 mt-1">Aromatic heirloom</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹85/kg</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/black_rice.jpeg" alt="Black Joha" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Black Joha</h4><p class="text-xs text-gray-400 mt-1">GI-tagged, fragrant</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹180/kg</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/sticky_rice.jpeg" alt="Sticky Rice" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Sticky Rice</h4><p class="text-xs text-gray-400 mt-1">Glutinous, festive</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹195/kg</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/red_bau_rice.jpeg" alt="Red Bau Rice" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Red Bau Rice</h4><p class="text-xs text-gray-400 mt-1">Nutty, iron-rich</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹120/kg</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/black_rice.jpeg" alt="Manipuri Black Rice" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-4"><h4 class="font-bold text-green-900 text-sm" style="font-family:'Playfair Display',serif">Manipuri Black Rice</h4><p class="text-xs text-gray-400 mt-1">Antioxidant-rich</p><span class="text-amber-700 font-bold text-sm mt-3 block">₹240/kg</span></div>
-        </div>
-      </div>
-    </div>
+    @forelse ($categories as $category)
+      @php
+        $categoryName = strtolower($category->name);
+        $styleKey = 'default';
 
-    <!-- Mustard Oil -->
-    <div id="mustard-oil" class="mb-16 reveal">
-      <div class="flex items-center gap-4 mb-8">
-        <div class="w-12 h-12 bg-amber-700 rounded-xl flex items-center justify-center text-2xl shadow-lg">🫒</div>
-        <div><h3 class="text-2xl md:text-3xl font-bold text-green-900" style="font-family:'Playfair Display',serif">Mustard Oil</h3><p class="text-sm text-gray-500">Cold-pressed, single-origin from Majuli island</p></div>
-        <div class="ml-4 hidden sm:block h-px bg-amber-200 flex-1"></div>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm max-w-sm">
-          <div class="h-56 bg-gray-50 flex items-center justify-center p-4">
-            <img src="images/products/mustard_oil.jpeg" alt="Majuli Pure Mustard Oil" class="h-full w-full object-contain drop-shadow-md" />
-          </div>
-          <div class="p-5">
-            <div class="flex items-center gap-2 mb-2"><span class="text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">Single Origin</span><span class="text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">Cold Pressed</span></div>
-            <h4 class="font-bold text-green-900 text-lg" style="font-family:'Playfair Display',serif">Majuli Pure Mustard Oil</h4>
-            <p class="text-sm text-gray-500 mt-2 leading-relaxed">From the famous river island of Majuli, Assam. Traditional cold-press method preserving all natural pungency and nutrients.</p>
-            <div class="mt-4 flex items-center justify-between"><div><span class="text-amber-700 font-bold text-xl">₹240</span><span class="text-xs text-gray-400 ml-1">/ 1 Litre</span></div><button class="bg-green-800 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-700 transition-colors">Order Now</button></div>
-          </div>
-        </div>
-      </div>
-    </div>
+        foreach (['rice', 'oil', 'pickle'] as $key) {
+            if (str_contains($categoryName, $key)) {
+                $styleKey = $key;
+                break;
+            }
+        }
 
-    <!-- Pickles -->
-    <div id="pickles" class="reveal">
-      <div class="flex items-center gap-4 mb-8">
-        <div class="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center text-2xl shadow-lg">🫙</div>
-        <div><h3 class="text-2xl md:text-3xl font-bold text-green-900" style="font-family:'Playfair Display',serif">Pickles</h3><p class="text-sm text-gray-500">Traditional recipes, no preservatives, bold Northeast flavours</p></div>
-        <div class="ml-4 hidden sm:block h-px bg-red-200 flex-1"></div>
+        $style = $categoryStyles[$styleKey];
+      @endphp
+
+      <div id="{{ $category->slug }}" class="mb-16 reveal">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-12 h-12 {{ $style['iconBg'] }} rounded-xl flex items-center justify-center text-2xl shadow-lg">{{ $style['icon'] }}</div>
+          <div>
+            <h3 class="text-2xl md:text-3xl font-bold text-green-900" style="font-family:'Playfair Display',serif">{{ $category->name }}</h3>
+            <p class="text-sm text-gray-500">{{ $category->description ?: 'Browse our curated products in this category.' }}</p>
+          </div>
+          <div class="ml-4 hidden sm:block h-px {{ $style['lineBg'] }} flex-1"></div>
+        </div>
+
+        @if ($category->products->isNotEmpty())
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            @foreach ($category->products as $product)
+              <a href="{{ route('products.show', $product->slug) }}" class="product-card bg-white rounded-2xl overflow-hidden shadow-sm block">
+                <div class="h-44 bg-gray-50 flex items-center justify-center p-3">
+                  <img src="{{ $product->image_url ?: $productFallbackImage }}" alt="{{ $product->name }}" class="h-full w-full object-contain drop-shadow" />
+                </div>
+                <div class="p-4">
+                  <span class="text-[11px] font-semibold uppercase tracking-wide {{ $style['badgeClass'] }}">{{ $category->name }}</span>
+                  <h4 class="font-bold text-green-900 text-sm mt-1" style="font-family:'Playfair Display',serif">{{ $product->name }}</h4>
+                  <p class="text-xs text-gray-400 mt-1">{{ \Illuminate\Support\Str::limit($product->description ?: ($product->sku ?: 'Freshly packed product'), 48) }}</p>
+                  <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    @if ($product->has_discount)
+                      <span class="text-xs text-gray-400 line-through">₹{{ number_format((float) $product->price, 2) }}</span>
+                    @endif
+                    <span class="text-amber-700 font-bold text-sm">₹{{ number_format($product->display_price, 2) }}</span>
+                  </div>
+                </div>
+              </a>
+            @endforeach
+          </div>
+        @else
+          <div class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-8 text-center text-sm font-medium text-gray-500">
+            Products Not Available
+          </div>
+        @endif
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Green Chilli Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Green Chilli</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹60/100g</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Ghost Chilli Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Ghost Chilli</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹135/100g</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Jujubi Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Jujubi</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹60/100g</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Mango Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Mango</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹55/100g</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Garlic Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Garlic</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹96/100g</span></div>
-        </div>
-        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-40 bg-gray-50 flex items-center justify-center p-3">
-            <img src="images/products/pickle.jpeg" alt="Mix Veg Pickle" class="h-full w-full object-contain drop-shadow" />
-          </div>
-          <div class="p-3"><h4 class="font-bold text-green-900 text-xs" style="font-family:'Playfair Display',serif">Mix Veg</h4><span class="text-amber-700 font-bold text-sm block mt-1">₹90/100g</span></div>
-        </div>
+    @empty
+      <div class="rounded-3xl border border-dashed border-green-300 bg-white px-6 py-12 text-center text-gray-600">
+        Product categories are not available right now.
       </div>
-    </div>
+    @endforelse
   </div>
 </section>
 
-<!-- Trust Strip -->
 <section class="py-12 bg-green-900">
   <div class="max-w-6xl mx-auto px-4">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
@@ -286,7 +240,6 @@
   </div>
 </section>
 
-<!-- ============================================================ CONTACT ============================================================ -->
 <section id="contact" class="py-16" style="background:var(--cream)">
   <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-12 reveal">
@@ -325,13 +278,4 @@
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
 @endsection
-

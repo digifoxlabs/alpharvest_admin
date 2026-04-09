@@ -217,11 +217,22 @@ body::before {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 1rem;
+  scrollbar-color: var(--gold) #e5ddd0;
+  scrollbar-width: thin;
 }
 
-.featured-scroll::-webkit-scrollbar { height: 4px; }
-.featured-scroll::-webkit-scrollbar-track { background: #e5ddd0; border-radius: 4px; }
-.featured-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+.featured-scroll::-webkit-scrollbar { height: 8px; }
+.featured-scroll::-webkit-scrollbar-track {
+  background: linear-gradient(90deg, rgba(229, 221, 208, 0.5), #e5ddd0, rgba(229, 221, 208, 0.5));
+  border-radius: 9999px;
+}
+.featured-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #9c6d14, var(--gold));
+  border-radius: 9999px;
+}
+.featured-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #855b10, #d8a43d);
+}
 
 .featured-card {
   flex: 0 0 240px;
@@ -238,6 +249,21 @@ body::before {
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.product-hero {
+  background:
+    radial-gradient(circle at top right, rgba(200, 146, 42, 0.16), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(45, 90, 39, 0.14), transparent 34%),
+    linear-gradient(180deg, #fffdf8 0%, #f4ede2 100%);
+}
+
+.product-gallery-card {
+  box-shadow: 0 28px 80px rgba(18, 53, 20, 0.12);
+}
+
+.product-info-card {
+  box-shadow: 0 22px 60px rgba(18, 53, 20, 0.08);
 }
 
 /* ============================================================
@@ -306,4 +332,11 @@ body::before {
    ============================================================ */
 @media (max-width: 768px) {
   .featured-card { flex: 0 0 200px; }
+}
+
+@media (min-width: 1024px) {
+  .featured-scroll {
+    padding-bottom: 1.25rem;
+    padding-inline: 0.25rem;
+  }
 }

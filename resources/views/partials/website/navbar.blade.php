@@ -1,4 +1,13 @@
 <!-- ============================================================ NAVBAR ============================================================ -->
+@php
+  $navbarCategoryIcons = [
+      'rice' => '🌾',
+      'oil' => '🫒',
+      'pickle' => '🫙',
+      'default' => '🛍️',
+  ];
+@endphp
+
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-3 px-4 md:px-8">
   <div class="max-w-7xl mx-auto flex items-center justify-between relative">
 
@@ -30,49 +39,34 @@
 
         <!-- Level-1 panel -->
         <div class="dropdown-menu top-full right-0 mt-1 w-56 bg-white rounded-2xl shadow-2xl border border-green-50 py-2" style="overflow:visible">
+          @forelse (($navbarCategories ?? collect()) as $category)
+            @php
+              $categoryName = strtolower($category->name);
+              $categoryIcon = $navbarCategoryIcons['default'];
 
-          <!-- Ethnic Rice sub-dropdown -->
-          <div class="sub-dropdown relative">
-            <button class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-green-800 hover:bg-green-50 transition-colors bg-transparent border-none cursor-pointer">
-              <span>🌾 Ethnic Rice</span>
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-            <div class="sub-dropdown-menu bg-white rounded-2xl shadow-2xl border border-green-50 py-2" style="min-width:210px">
-              <a href="#ethnic-rice" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Titabior Aijung</a>
-              <a href="#ethnic-rice" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Black Joha</a>
-              <a href="#ethnic-rice" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Sticky Rice</a>
-              <a href="#ethnic-rice" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Red Bau Rice</a>
-              <a href="#ethnic-rice" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Manipuri Black Rice</a>
+              foreach (['rice', 'oil', 'pickle'] as $iconKey) {
+                  if (str_contains($categoryName, $iconKey)) {
+                      $categoryIcon = $navbarCategoryIcons[$iconKey];
+                      break;
+                  }
+              }
+            @endphp
+            <div class="sub-dropdown relative">
+              <button class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-green-800 hover:bg-green-50 transition-colors bg-transparent border-none cursor-pointer">
+                <span>{{ $categoryIcon }} {{ $category->name }}</span>
+                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+              <div class="sub-dropdown-menu bg-white rounded-2xl shadow-2xl border border-green-50 py-2" style="min-width:210px">
+                @forelse ($category->products as $product)
+                  <a href="{{ route('products.show', $product->slug) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">{{ $product->name }}</a>
+                @empty
+                  <span class="block px-4 py-2 text-sm text-gray-400">Products Not Available</span>
+                @endforelse
+              </div>
             </div>
-          </div>
-
-          <!-- Mustard Oil sub-dropdown -->
-          <div class="sub-dropdown relative">
-            <button class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-green-800 hover:bg-green-50 transition-colors bg-transparent border-none cursor-pointer">
-              <span>🫒 Mustard Oil</span>
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-            <div class="sub-dropdown-menu bg-white rounded-2xl shadow-2xl border border-green-50 py-2" style="min-width:210px">
-              <a href="#mustard-oil" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Majuli Pure Mustard Oil</a>
-            </div>
-          </div>
-
-          <!-- Pickles sub-dropdown -->
-          <div class="sub-dropdown relative">
-            <button class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-green-800 hover:bg-green-50 transition-colors bg-transparent border-none cursor-pointer">
-              <span>🫙 Pickles</span>
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-            <div class="sub-dropdown-menu bg-white rounded-2xl shadow-2xl border border-green-50 py-2" style="min-width:210px">
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Green Chilli Pickle</a>
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Ghost Chilli Pickle</a>
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Jujubi Pickle</a>
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Mango Pickle</a>
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Garlic Pickle</a>
-              <a href="#pickles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors">Mix Veg Pickle</a>
-            </div>
-          </div>
-
+          @empty
+            <span class="block px-4 py-2 text-sm text-gray-400">Products Not Available</span>
+          @endforelse
         </div>
       </div>
 
@@ -109,38 +103,35 @@
         <svg id="products-chev" class="w-4 h-4 ml-auto text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div id="products-sub" class="mobile-sub pl-4">
-        <button onclick="toggleMobile('rice-sub','rice-chev')" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-green-50 text-sm font-semibold text-green-800 transition-colors bg-transparent border-none cursor-pointer">
-          🌾 Ethnic Rice
-          <svg id="rice-chev" class="w-3.5 h-3.5 ml-auto text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div id="rice-sub" class="mobile-sub-2 pl-4">
-          <a href="#ethnic-rice" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Titabior Aijung</a>
-          <a href="#ethnic-rice" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Black Joha</a>
-          <a href="#ethnic-rice" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Sticky Rice</a>
-          <a href="#ethnic-rice" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Red Bau Rice</a>
-          <a href="#ethnic-rice" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Manipuri Black Rice</a>
-        </div>
+        @forelse (($navbarCategories ?? collect()) as $category)
+          @php
+            $categoryName = strtolower($category->name);
+            $categoryIcon = $navbarCategoryIcons['default'];
 
-        <button onclick="toggleMobile('oil-sub','oil-chev')" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-green-50 text-sm font-semibold text-green-800 transition-colors bg-transparent border-none cursor-pointer">
-          🫒 Mustard Oil
-          <svg id="oil-chev" class="w-3.5 h-3.5 ml-auto text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div id="oil-sub" class="mobile-sub-2 pl-4">
-          <a href="#mustard-oil" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Majuli Pure Mustard Oil</a>
-        </div>
+            foreach (['rice', 'oil', 'pickle'] as $iconKey) {
+                if (str_contains($categoryName, $iconKey)) {
+                    $categoryIcon = $navbarCategoryIcons[$iconKey];
+                    break;
+                }
+            }
 
-        <button onclick="toggleMobile('pickle-sub','pickle-chev')" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-green-50 text-sm font-semibold text-green-800 transition-colors bg-transparent border-none cursor-pointer">
-          🫙 Pickles
-          <svg id="pickle-chev" class="w-3.5 h-3.5 ml-auto text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div id="pickle-sub" class="mobile-sub-2 pl-4">
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Green Chilli</a>
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Ghost Chilli</a>
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Jujubi</a>
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Mango</a>
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Garlic</a>
-          <a href="#pickles" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">Mix Veg</a>
-        </div>
+            $subId = 'category-sub-' . $category->id;
+            $chevId = 'category-chev-' . $category->id;
+          @endphp
+          <button onclick="toggleMobile('{{ $subId }}','{{ $chevId }}')" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-green-50 text-sm font-semibold text-green-800 transition-colors bg-transparent border-none cursor-pointer">
+            {{ $categoryIcon }} {{ $category->name }}
+            <svg id="{{ $chevId }}" class="w-3.5 h-3.5 ml-auto text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="{{ $subId }}" class="mobile-sub-2 pl-4">
+            @forelse ($category->products as $product)
+              <a href="{{ route('products.show', $product->slug) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-green-800 rounded-lg hover:bg-green-50 transition-colors">{{ $product->name }}</a>
+            @empty
+              <span class="block px-3 py-2 text-sm text-gray-400">Products Not Available</span>
+            @endforelse
+          </div>
+        @empty
+          <span class="block px-4 py-2 text-sm text-gray-400">Products Not Available</span>
+        @endforelse
       </div>
     </div>
 

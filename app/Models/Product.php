@@ -43,6 +43,8 @@ class Product extends Model
 
     protected $appends = [
         'image_url',
+        'display_price',
+        'has_discount',
     ];
 
     public function store(): BelongsTo
@@ -71,5 +73,15 @@ class Product extends Model
         }
 
         return Storage::disk('public')->url($this->image_path);
+    }
+
+    public function getDisplayPriceAttribute(): float
+    {
+        return (float) ($this->sale_price ?? $this->price);
+    }
+
+    public function getHasDiscountAttribute(): bool
+    {
+        return $this->sale_price !== null && (float) $this->sale_price < (float) $this->price;
     }
 }

@@ -13,9 +13,13 @@ use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Website\HomeController;
+use App\Http\Controllers\Website\SeoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products/{slug}', [HomeController::class, 'show'])->name('products.show');
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+Route::get('/robots.xml', [SeoController::class, 'robotsXml'])->name('seo.robots-xml');
 
 Route::get('/payments/{payment:reference}', [PaymentController::class, 'show'])->name('payments.show');
 
