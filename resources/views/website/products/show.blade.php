@@ -1,9 +1,10 @@
 @extends('layouts.website')
 
 @php
+  $productMetaTitle = \Illuminate\Support\Str::limit($product->name . ' | Alp Harvest', 60, '');
   $productMetaDescription = \Illuminate\Support\Str::limit(
-      $product->description ?: ('Buy ' . $product->name . ' from Alp Harvest. Explore authentic products from Assam with transparent pricing and direct enquiry support.'),
-      155
+      $product->description ?: ('Buy ' . $product->name . ' from Alp Harvest. Authentic Assam product with transparent pricing and direct order support.'),
+      160
   );
   $productStructuredDescription = $product->description ?: 'Authentic food product from Alp Harvest.';
   $productStructuredImage = $product->image_url ?: asset('images/logo.jpeg');
@@ -15,7 +16,7 @@
 @endphp
 
 @section('title', $product->name)
-@section('meta_title', $product->name . ' | Alp Harvest')
+@section('meta_title', $productMetaTitle)
 @section('meta_description', $productMetaDescription)
 @section('canonical_url', $productStructuredUrl)
 @section('meta_image', $productStructuredImage)
