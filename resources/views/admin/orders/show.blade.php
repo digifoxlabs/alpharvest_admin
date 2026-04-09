@@ -12,7 +12,8 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ $publicUrl }}" target="_blank" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Open Public Order Page</a>
-            <a href="{{ route('admin.orders.index') }}" class="text-sm font-medium text-gray-600 dark:text-gray-300">Back to Orders</a>
+            <button type="button" id="copyPublicOrderLink" data-public-url="{{ $publicUrl }}" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Copy Link</button>
+            <a href="{{ route('admin.orders.index') }}" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Back to Orders</a>
         </div>
     </div>
 
@@ -48,6 +49,12 @@
                     <div><span class="font-medium text-gray-800 dark:text-white/90">Store:</span> {{ $order->store?->name ?: 'Not available' }}</div>
                     <div><span class="font-medium text-gray-800 dark:text-white/90">Placed At:</span> {{ optional($order->placed_at ?: $order->created_at)->format('Y-m-d H:i') }}</div>
                 </div>
+                <div class="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                    <p class="font-medium text-gray-800 dark:text-white/90">Complete Delivery Address</p>
+                    <p class="mt-2">Pincode: {{ $delivery['pincode'] ?? 'Not available' }}</p>
+                    <p class="mt-1">City: {{ $delivery['city'] ?? 'Not available' }}</p>
+                    <p class="mt-1 whitespace-pre-wrap">Address: {{ $delivery['address'] ?? 'Not available' }}</p>
+                </div>
             </div>
         </div>
 
@@ -78,18 +85,21 @@
                     </div>
                 </div>
 
-                <div class="grid gap-5 md:grid-cols-3">
-                    <div>
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Pincode</label>
-                        <input type="text" name="delivery_pincode" value="{{ old('delivery_pincode', $delivery['pincode'] ?? '') }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <div class="space-y-5 rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">Delivery Address</p>
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Pincode</label>
+                            <input type="text" name="delivery_pincode" value="{{ old('delivery_pincode', $delivery['pincode'] ?? '') }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
+                            <input type="text" name="delivery_city" value="{{ old('delivery_city', $delivery['city'] ?? '') }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        </div>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery City</label>
-                        <input type="text" name="delivery_city" value="{{ old('delivery_city', $delivery['city'] ?? '') }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Address</label>
-                        <input type="text" name="delivery_address" value="{{ old('delivery_address', $delivery['address'] ?? '') }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                        <textarea name="delivery_address" rows="4" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('delivery_address', $delivery['address'] ?? '') }}</textarea>
                     </div>
                 </div>
 
@@ -143,6 +153,7 @@
     const modal = document.getElementById('cancelInventoryModal');
     const closeButton = document.getElementById('cancelInventoryClose');
     const confirmButton = document.getElementById('cancelInventoryConfirm');
+    const copyButton = document.getElementById('copyPublicOrderLink');
 
     if (!form || !statusField || !modal) {
         return;
@@ -168,6 +179,26 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         form.submit();
+    });
+
+    copyButton?.addEventListener('click', async () => {
+        const originalText = copyButton.textContent;
+        const url = copyButton.dataset.publicUrl;
+
+        if (!url) {
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(url);
+            copyButton.textContent = 'Copied';
+        } catch (error) {
+            copyButton.textContent = 'Copy Failed';
+        }
+
+        window.setTimeout(() => {
+            copyButton.textContent = originalText;
+        }, 1500);
     });
 })();
 </script>

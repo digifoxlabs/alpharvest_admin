@@ -14,7 +14,15 @@
             <div>
                 <h2 class="text-lg font-semibold text-[#1f3b1a]">Customer</h2>
                 <p class="mt-3 text-sm text-[#44523d]">{{ $order->customer?->name ?: 'Guest customer' }}</p>
-                <p class="mt-1 text-sm text-[#44523d]">{{ $order->customer?->phone ?: 'Phone not available' }}</p>
+                @if ($order->customer?->phone)
+                    <p class="mt-1 text-sm">
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $order->customer->phone) }}" class="font-medium text-[#2d5a27] underline decoration-[#9dbc7f] underline-offset-4">
+                            {{ $order->customer->phone }}
+                        </a>
+                    </p>
+                @else
+                    <p class="mt-1 text-sm text-[#44523d]">Phone not available</p>
+                @endif
             </div>
             <div>
                 <h2 class="text-lg font-semibold text-[#1f3b1a]">Delivery Address</h2>

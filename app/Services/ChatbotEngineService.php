@@ -590,7 +590,7 @@ class ChatbotEngineService
                 'Delivery details saved.',
                 $this->storeEngine->deliverySummary($customer),
                 $orderCreatedAfterSave && $order ? "Order created: {$order->order_number}" : null,
-                'Our store team will send your payment link shortly.',
+                'Our store team will update you shortly.',
             ]))),
             'buttons' => [               
                 ['id' => 'my_orders', 'title' => 'My Orders'],
@@ -907,7 +907,7 @@ class ChatbotEngineService
             ];
         }
 
-        $deliverable = $this->storeEngine->isDeliverable($store, $address['pincode'], $address['city']);
+        $deliverable = $this->storeEngine->isDeliverable($store, $address['pincode']);
 
         return [
             'kind' => 'buttons',
