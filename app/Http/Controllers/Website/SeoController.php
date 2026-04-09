@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\View\View;
 
 class SeoController extends Controller
 {
-    public function sitemap(): View
+    public function sitemap(): Response
     {
         $pages = collect([
             [
