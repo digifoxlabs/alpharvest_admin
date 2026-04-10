@@ -1,8 +1,8 @@
 @extends('layouts.website')
 
 @section('title','Home')
-@section('meta_title', 'Alp Harvest | Organic Foods from Assam')
-@section('meta_description', 'Shop organic rice, mustard oil, and Assamese pickles from Alp Harvest. Explore authentic foods from Assam with delivery across India.')
+@section('meta_title', 'Organic Rice, Mustard Oil & Pickles in Guwahati | Alp Harvest')
+@section('meta_description', 'Order organic ethnic rice, Majuli mustard oil and Assamese pickles in Guwahati. 100% natural foods sourced directly from Northeast farmers by Alp Harvest.')
 @section('canonical_url', route('home'))
 @section('meta_image', asset('images/logo.jpeg'))
 @section('structured_data')

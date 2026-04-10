@@ -13,14 +13,75 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProductController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::with(['category', 'store'])->latest()->paginate(10);
+        $filters = [
+            'search' => trim((string) $request->input('search', '')),
+            'category_id' => (string) $request->input('category_id', ''),
+            'status' => (string) $request->input('status', ''),
+            'featured' => (string) $request->input('featured', ''),
+        ];
 
-        return view('admin.products.index', compact('products'));
+        $products = $this->filteredProductsQuery($filters)
+            ->with(['category', 'store'])
+            ->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.products.index', [
+            'products' => $products,
+            'categories' => ProductCategory::query()->orderBy('name')->get(),
+            'filters' => $filters,
+            'stats' => [
+                'total_products' => Product::query()->count(),
+                'total_categories' => ProductCategory::query()->count(),
+                'active_products' => Product::query()->where('is_active', true)->count(),
+            ],
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $filters = [
+            'search' => trim((string) $request->input('search', '')),
+            'category_id' => (string) $request->input('category_id', ''),
+            'status' => (string) $request->input('status', ''),
+            'featured' => (string) $request->input('featured', ''),
+        ];
+
+        $products = $this->filteredProductsQuery($filters)
+            ->with(['category', 'store'])
+            ->latest('id')
+            ->get();
+
+        return response()->streamDownload(function () use ($products) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Sl No', 'Product Name', 'SKU', 'Category', 'Status', 'Featured', 'Price', 'Sale Price', 'Inventory', 'Store']);
+
+            foreach ($products as $index => $product) {
+                fputcsv($handle, [
+                    $index + 1,
+                    $product->name,
+                    $product->sku,
+                    $product->category?->name ?: '',
+                    $product->is_active ? 'Active' : 'Inactive',
+                    $product->is_featured ? 'Yes' : 'No',
+                    number_format((float) $product->price, 2, '.', ''),
+                    $product->sale_price !== null ? number_format((float) $product->sale_price, 2, '.', '') : '',
+                    $product->inventory_quantity,
+                    $product->store?->name ?: '',
+                ]);
+            }
+
+            fclose($handle);
+        }, 'products-export.csv', [
+            'Content-Type' => 'text/csv',
+        ]);
     }
 
     public function create(): View
@@ -92,6 +153,26 @@ class ProductController extends Controller
             'cropped_product_image' => ['nullable', 'string'],
             'remove_product_image' => ['nullable', 'boolean'],
         ];
+    }
+
+    private function filteredProductsQuery(array $filters)
+    {
+        $search = $filters['search'] ?? '';
+        $categoryId = (int) ($filters['category_id'] ?? 0);
+        $status = $filters['status'] ?? '';
+        $featured = $filters['featured'] ?? '';
+
+        return Product::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($productQuery) use ($search) {
+                    $productQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%");
+                });
+            })
+            ->when($categoryId > 0, fn ($query) => $query->where('product_category_id', $categoryId))
+            ->when(in_array($status, ['active', 'inactive'], true), fn ($query) => $query->where('is_active', $status === 'active'))
+            ->when(in_array($featured, ['featured', 'non_featured'], true), fn ($query) => $query->where('is_featured', $featured === 'featured'));
     }
 
     private function syncProductImage(Request $request, array $validated, ?Product $product = null): array

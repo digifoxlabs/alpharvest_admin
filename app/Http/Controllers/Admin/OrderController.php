@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
 {
@@ -24,11 +25,66 @@ class OrderController extends Controller
     ) {
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $orders = Order::with(['store', 'customer'])->withCount('items')->latest()->paginate(10);
+        $filters = [
+            'search' => trim((string) $request->input('search', '')),
+            'status' => (string) $request->input('status', ''),
+            'payment_status' => (string) $request->input('payment_status', ''),
+        ];
 
-        return view('admin.orders.index', compact('orders'));
+        $orders = $this->filteredOrdersQuery($filters)
+            ->with(['store', 'customer'])
+            ->withCount('items')
+            ->latest('placed_at')
+            ->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.orders.index', [
+            'orders' => $orders,
+            'filters' => $filters,
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $filters = [
+            'search' => trim((string) $request->input('search', '')),
+            'status' => (string) $request->input('status', ''),
+            'payment_status' => (string) $request->input('payment_status', ''),
+        ];
+
+        $orders = $this->filteredOrdersQuery($filters)
+            ->with(['store', 'customer'])
+            ->withCount('items')
+            ->latest('placed_at')
+            ->latest('id')
+            ->get();
+
+        return response()->streamDownload(function () use ($orders) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Sl No', 'Order Number', 'Customer', 'Status', 'Payment Status', 'Currency', 'Total', 'Items', 'Placed At']);
+
+            foreach ($orders as $index => $order) {
+                fputcsv($handle, [
+                    $index + 1,
+                    $order->order_number,
+                    $order->customer?->name ?: $order->customer?->phone ?: 'Guest',
+                    $order->status,
+                    $order->payment_status,
+                    $order->currency,
+                    number_format((float) $order->total, 2, '.', ''),
+                    $order->items_count,
+                    optional($order->placed_at ?: $order->created_at)->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($handle);
+        }, 'orders-export.csv', [
+            'Content-Type' => 'text/csv',
+        ]);
     }
 
     public function create(): View
@@ -115,6 +171,24 @@ class OrderController extends Controller
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
             'items.*.total_price' => ['required', 'numeric', 'min:0'],
         ];
+    }
+
+    private function filteredOrdersQuery(array $filters)
+    {
+        $search = $filters['search'] ?? '';
+        $status = $filters['status'] ?? '';
+        $paymentStatus = $filters['payment_status'] ?? '';
+
+        return Order::query()
+            ->when($search !== '', fn ($query) => $query->where('order_number', 'like', "%{$search}%"))
+            ->when(
+                in_array($status, ['pending', 'processing', 'dispatched', 'delivered', 'cancelled'], true),
+                fn ($query) => $query->where('status', $status)
+            )
+            ->when(
+                in_array($paymentStatus, ['pending', 'paid', 'failed', 'refunded'], true),
+                fn ($query) => $query->where('payment_status', $paymentStatus)
+            );
     }
 
     private function updateRules(): array

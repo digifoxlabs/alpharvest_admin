@@ -4,7 +4,7 @@
     $siteUrl = rtrim(config('app.url', url('/')), '/');
     $currentUrl = url()->current();
     $metaTitle = trim($__env->yieldContent('meta_title', $__env->yieldContent('title', $siteName)));
-    $metaDescription = trim($__env->yieldContent('meta_description', 'Organic rice, mustard oil, and Assamese pickles from Alp Harvest, sourced in Assam and delivered across India.'));
+    $metaDescription = trim($__env->yieldContent('meta_description', 'Order organic ethnic rice, Majuli mustard oil and Assamese pickles in Guwahati. 100% natural foods sourced directly from Northeast farmers by Alp Harvest.'));
     $metaImage = $__env->yieldContent('meta_image', asset('images/logo.jpeg'));
     $canonicalUrl = $__env->yieldContent('canonical_url', $currentUrl);
     $robotsContent = trim($__env->yieldContent('meta_robots', 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'));

@@ -72,6 +72,7 @@ Route::prefix('admin')
 
         Route::prefix('products')->name('products.')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->middleware('permission:view products')->name('index');
+            Route::get('/export/excel', [ProductController::class, 'export'])->middleware('permission:view products')->name('export');
             Route::get('/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('create');
             Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('edit');
@@ -81,6 +82,7 @@ Route::prefix('admin')
 
         Route::prefix('orders')->name('orders.')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->middleware('permission:view orders')->name('index');
+            Route::get('/export/excel', [OrderController::class, 'export'])->middleware('permission:view orders')->name('export');
             Route::get('/create', [OrderController::class, 'create'])->middleware('permission:create orders')->name('create');
             Route::post('/', [OrderController::class, 'store'])->middleware('permission:create orders')->name('store');
             Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('show');
