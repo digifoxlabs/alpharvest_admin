@@ -368,7 +368,7 @@ class ChatbotEngineService
             return [
                 [
                     'kind' => 'text',
-                    'body' => "*Delivering to:* {$pincode} 🚚\n\n🆓 *Free Delivery on orders above Rs.500*",
+                    'body' => "*Delivering to:* {$pincode} 🚚\n\n*Home Delivery on orders above Rs.500*",
                 ],
                 [
                     'kind' => 'catalog_message',
