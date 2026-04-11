@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PreservesUniqueAttributesOnSoftDelete;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
     use HasFactory;
+    use PreservesUniqueAttributesOnSoftDelete;
+    use SoftDeletes;
 
     protected $fillable = [
         'store_id',
@@ -30,6 +34,7 @@ class Order extends Model
 
     protected $casts = [
         'metadata' => 'array',
+        'archived_unique_values' => 'array',
         'subtotal' => 'decimal:2',
         'total' => 'decimal:2',
         'placed_at' => 'datetime',
@@ -43,7 +48,7 @@ class Order extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     public function conversation(): BelongsTo
@@ -70,5 +75,10 @@ class Order extends Model
     {
         return $this->hasMany(InventoryTransaction::class, 'source_id')
             ->where('source_type', static::class);
+    }
+
+    public function getUniqueSoftDeleteColumns(): array
+    {
+        return ['order_number'];
     }
 }

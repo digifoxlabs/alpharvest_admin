@@ -8,13 +8,21 @@
         <div>
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Products</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">Manage items that will be synced to your Meta WhatsApp store.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <a href="{{ route('admin.products.index', ['scope' => 'active']) }}" class="rounded-lg px-4 py-2 text-sm font-medium {{ $scope === 'active' ? 'bg-brand-500 text-white' : 'border border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300' }}">Active</a>
+                <a href="{{ route('admin.products.index', ['scope' => 'trashed']) }}" class="rounded-lg px-4 py-2 text-sm font-medium {{ $scope === 'trashed' ? 'bg-brand-500 text-white' : 'border border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300' }}">Trash</a>
+            </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             @can('view products')
+                @if ($scope !== 'trashed')
                 <a href="{{ route('admin.products.export', request()->query()) }}" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Export to Excel</a>
+                @endif
             @endcan
             @can('create products')
+                @if ($scope !== 'trashed')
                 <a href="{{ route('admin.products.create') }}" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Add Product</a>
+                @endif
             @endcan
         </div>
     </div>
@@ -36,6 +44,7 @@
 
     <div class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
         <form method="GET" action="{{ route('admin.products.index') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <input type="hidden" name="scope" value="{{ $scope }}">
             <div class="xl:col-span-2">
                 <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                 <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Search by product name or SKU" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
@@ -67,7 +76,7 @@
             </div>
             <div class="flex items-end gap-3 xl:col-span-5">
                 <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Apply Filters</button>
-                <a href="{{ route('admin.products.index') }}" class="text-sm font-medium text-gray-600 dark:text-gray-300">Reset</a>
+                <a href="{{ route('admin.products.index', ['scope' => $scope]) }}" class="text-sm font-medium text-gray-600 dark:text-gray-300">Reset</a>
             </div>
         </form>
     </div>
@@ -112,10 +121,38 @@
                             </td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ number_format((float) $product->price, 2) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $product->inventory_quantity }}</td>
-                            <td class="px-5 py-4"><div class="flex flex-wrap gap-2">@can('edit products')<a href="{{ route('admin.products.edit', $product) }}" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Edit</a>@endcan @can('delete products')<form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Delete this product?')">@csrf @method('DELETE')<button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button></form>@endcan</div></td>
+                            <td class="px-5 py-4">
+                                <div class="flex flex-wrap gap-2">
+                                    @if ($scope !== 'trashed')
+                                        @can('edit products')
+                                            <a href="{{ route('admin.products.edit', $product) }}" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">Edit</a>
+                                        @endcan
+                                        @can('delete products')
+                                            <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Archive this product?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Archive</button>
+                                            </form>
+                                        @endcan
+                                    @else
+                                        @can('delete products')
+                                            <form action="{{ route('admin.products.restore', $product->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="rounded-lg border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50">Restore</button>
+                                            </form>
+                                            <form action="{{ route('admin.products.force-delete', $product->id) }}" method="POST" onsubmit="return confirm('Permanently delete this product? This cannot be undone.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Delete Permanently</button>
+                                            </form>
+                                        @endcan
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">No products found for the selected filters.</td></tr>
+                        <tr><td colspan="7" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">{{ $scope === 'trashed' ? 'Trash is empty.' : 'No products found for the selected filters.' }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

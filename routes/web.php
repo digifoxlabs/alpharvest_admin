@@ -65,6 +65,8 @@ Route::prefix('admin')
             Route::get('/', [CategoryController::class, 'index'])->middleware('permission:view categories')->name('index');
             Route::get('/create', [CategoryController::class, 'create'])->middleware('permission:create categories')->name('create');
             Route::post('/', [CategoryController::class, 'store'])->middleware('permission:create categories')->name('store');
+            Route::patch('/{category}/restore', [CategoryController::class, 'restore'])->middleware('permission:delete categories')->name('restore');
+            Route::delete('/{category}/force', [CategoryController::class, 'forceDelete'])->middleware('permission:delete categories')->name('force-delete');
             Route::get('/{category}/edit', [CategoryController::class, 'edit'])->middleware('permission:edit categories')->name('edit');
             Route::put('/{category}', [CategoryController::class, 'update'])->middleware('permission:edit categories')->name('update');
             Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete categories')->name('destroy');
@@ -75,6 +77,8 @@ Route::prefix('admin')
             Route::get('/export/excel', [ProductController::class, 'export'])->middleware('permission:view products')->name('export');
             Route::get('/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('create');
             Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
+            Route::patch('/{product}/restore', [ProductController::class, 'restore'])->middleware('permission:delete products')->name('restore');
+            Route::delete('/{product}/force', [ProductController::class, 'forceDelete'])->middleware('permission:delete products')->name('force-delete');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
@@ -85,6 +89,8 @@ Route::prefix('admin')
             Route::get('/export/excel', [OrderController::class, 'export'])->middleware('permission:view orders')->name('export');
             Route::get('/create', [OrderController::class, 'create'])->middleware('permission:create orders')->name('create');
             Route::post('/', [OrderController::class, 'store'])->middleware('permission:create orders')->name('store');
+            Route::patch('/{order}/restore', [OrderController::class, 'restore'])->middleware('permission:delete orders')->name('restore');
+            Route::delete('/{order}/force', [OrderController::class, 'forceDelete'])->middleware('permission:delete orders')->name('force-delete');
             Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('show');
             Route::get('/{order}/edit', [OrderController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
             Route::put('/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('update');
@@ -95,10 +101,15 @@ Route::prefix('admin')
             Route::get('/', [InventoryController::class, 'index'])->middleware('permission:view inventory')->name('index');
             Route::get('/create', [InventoryController::class, 'create'])->middleware('permission:create inventory')->name('create');
             Route::post('/', [InventoryController::class, 'store'])->middleware('permission:create inventory')->name('store');
+            Route::patch('/{transaction}/restore', [InventoryController::class, 'restore'])->middleware('permission:delete inventory')->name('restore');
+            Route::delete('/{transaction}/force', [InventoryController::class, 'forceDelete'])->middleware('permission:delete inventory')->name('force-delete');
+            Route::delete('/{transaction}', [InventoryController::class, 'destroy'])->middleware('permission:delete inventory')->name('destroy');
         });
 
         Route::prefix('customers')->name('customers.')->group(function () {
             Route::get('/', [CustomerController::class, 'index'])->middleware('permission:view customers')->name('index');
+            Route::patch('/{customer}/restore', [CustomerController::class, 'restore'])->middleware('permission:delete customers')->name('restore');
+            Route::delete('/{customer}/force', [CustomerController::class, 'forceDelete'])->middleware('permission:delete customers')->name('force-delete');
             Route::get('/{customer}', [CustomerController::class, 'show'])->middleware('permission:view customers')->name('show');
             Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->middleware('permission:edit customers')->name('edit');
             Route::put('/{customer}', [CustomerController::class, 'update'])->middleware('permission:edit customers')->name('update');
@@ -107,6 +118,9 @@ Route::prefix('admin')
 
         Route::prefix('messages')->name('messages.')->group(function () {
             Route::get('/', [MessageController::class, 'index'])->middleware('permission:view chats')->name('index');
+            Route::patch('/{message}/restore', [MessageController::class, 'restore'])->middleware('permission:delete chats')->name('restore');
+            Route::delete('/{message}/force', [MessageController::class, 'forceDelete'])->middleware('permission:delete chats')->name('force-delete');
+            Route::delete('/{message}', [MessageController::class, 'destroy'])->middleware('permission:delete chats')->name('destroy');
         });
 
         Route::prefix('users')->name('users.')->group(function () {

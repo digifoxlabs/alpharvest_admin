@@ -5,21 +5,25 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Store;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $scope = $this->resolveScope($request);
+
         $customers = Customer::query()
             ->with('store')
             ->withCount('orders')
+            ->tap(fn (Builder $query) => $this->applyScope($query, $scope))
             ->latest('id')
             ->paginate(15);
 
-        return view('admin.customers.index', compact('customers'));
+        return view('admin.customers.index', compact('customers', 'scope'));
     }
 
     public function show(Customer $customer): View
@@ -102,7 +106,21 @@ class CustomerController extends Controller
     {
         $customer->delete();
 
-        return redirect()->route('admin.customers.index')->with('success', 'Customer deleted successfully.');
+        return redirect()->route('admin.customers.index')->with('success', 'Customer archived successfully.');
+    }
+
+    public function restore(int $customer): RedirectResponse
+    {
+        Customer::withTrashed()->findOrFail($customer)->restore();
+
+        return redirect()->route('admin.customers.index', ['scope' => 'trashed'])->with('success', 'Customer restored successfully.');
+    }
+
+    public function forceDelete(int $customer): RedirectResponse
+    {
+        Customer::onlyTrashed()->findOrFail($customer)->forceDelete();
+
+        return redirect()->route('admin.customers.index', ['scope' => 'trashed'])->with('success', 'Customer permanently deleted.');
     }
 
     protected function addressBookText(Customer $customer): string
@@ -117,5 +135,21 @@ class CustomerController extends Controller
             })
             ->filter()
             ->implode("\n");
+    }
+
+    protected function resolveScope(Request $request): string
+    {
+        $scope = (string) $request->input('scope', 'active');
+
+        return in_array($scope, ['active', 'trashed', 'all'], true) ? $scope : 'active';
+    }
+
+    protected function applyScope(Builder $query, string $scope): Builder
+    {
+        return match ($scope) {
+            'trashed' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
     }
 }

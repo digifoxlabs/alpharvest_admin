@@ -11,10 +11,10 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.customers.edit', $customer) }}" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Edit Customer</a>
-            <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" onsubmit="return confirm('Delete this customer?')">
+            <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" onsubmit="return confirm('Archive this customer?')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Delete</button>
+                <button type="submit" class="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Archive</button>
             </form>
         </div>
     </div>

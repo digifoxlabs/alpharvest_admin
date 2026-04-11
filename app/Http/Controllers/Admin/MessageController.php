@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\Store;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -16,8 +18,10 @@ class MessageController extends Controller
         $direction = (string) $request->input('direction', '');
         $status = (string) $request->input('status', '');
         $storeId = (int) $request->input('store_id', 0);
+        $scope = $this->resolveScope($request);
 
         $messageQuery = Message::query()
+            ->tap(fn (Builder $query) => $this->applyScope($query, $scope))
             ->with([
                 'conversation.store',
                 'conversation.customer',
@@ -110,7 +114,46 @@ class MessageController extends Controller
                 'direction' => $direction,
                 'status' => $status,
                 'store_id' => $storeId > 0 ? (string) $storeId : '',
+                'scope' => $scope,
             ],
+            'scope' => $scope,
         ]);
+    }
+
+    public function destroy(Message $message): RedirectResponse
+    {
+        $message->delete();
+
+        return redirect()->route('admin.messages.index')->with('success', 'Message archived successfully.');
+    }
+
+    public function restore(int $message): RedirectResponse
+    {
+        Message::withTrashed()->findOrFail($message)->restore();
+
+        return redirect()->route('admin.messages.index', ['scope' => 'trashed'])->with('success', 'Message restored successfully.');
+    }
+
+    public function forceDelete(int $message): RedirectResponse
+    {
+        Message::onlyTrashed()->findOrFail($message)->forceDelete();
+
+        return redirect()->route('admin.messages.index', ['scope' => 'trashed'])->with('success', 'Message permanently deleted.');
+    }
+
+    protected function resolveScope(Request $request): string
+    {
+        $scope = (string) $request->input('scope', 'active');
+
+        return in_array($scope, ['active', 'trashed', 'all'], true) ? $scope : 'active';
+    }
+
+    protected function applyScope(Builder $query, string $scope): Builder
+    {
+        return match ($scope) {
+            'trashed' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
     }
 }

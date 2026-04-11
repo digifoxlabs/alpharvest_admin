@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Store;
 use App\Services\OrderWorkflowService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,10 +28,12 @@ class OrderController extends Controller
 
     public function index(Request $request): View
     {
+        $scope = $this->resolveScope($request);
         $filters = [
             'search' => trim((string) $request->input('search', '')),
             'status' => (string) $request->input('status', ''),
             'payment_status' => (string) $request->input('payment_status', ''),
+            'scope' => $scope,
         ];
 
         $orders = $this->filteredOrdersQuery($filters)
@@ -44,6 +47,7 @@ class OrderController extends Controller
         return view('admin.orders.index', [
             'orders' => $orders,
             'filters' => $filters,
+            'scope' => $scope,
         ]);
     }
 
@@ -144,7 +148,21 @@ class OrderController extends Controller
     {
         $order->delete();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+        return redirect()->route('admin.orders.index')->with('success', 'Order archived successfully.');
+    }
+
+    public function restore(int $order): RedirectResponse
+    {
+        Order::withTrashed()->findOrFail($order)->restore();
+
+        return redirect()->route('admin.orders.index', ['scope' => 'trashed'])->with('success', 'Order restored successfully.');
+    }
+
+    public function forceDelete(int $order): RedirectResponse
+    {
+        Order::onlyTrashed()->findOrFail($order)->forceDelete();
+
+        return redirect()->route('admin.orders.index', ['scope' => 'trashed'])->with('success', 'Order permanently deleted.');
     }
 
     private function rules(?Order $order = null): array
@@ -180,6 +198,7 @@ class OrderController extends Controller
         $paymentStatus = $filters['payment_status'] ?? '';
 
         return Order::query()
+            ->tap(fn (Builder $query) => $this->applyScope($query, $filters['scope'] ?? 'active'))
             ->when($search !== '', fn ($query) => $query->where('order_number', 'like', "%{$search}%"))
             ->when(
                 in_array($status, ['pending', 'processing', 'dispatched', 'delivered', 'cancelled'], true),
@@ -267,5 +286,21 @@ class OrderController extends Controller
 
         return Store::query()->where('is_active', true)->orderBy('id')->value('id')
             ?? Store::query()->orderBy('id')->value('id');
+    }
+
+    private function resolveScope(Request $request): string
+    {
+        $scope = (string) $request->input('scope', 'active');
+
+        return in_array($scope, ['active', 'trashed', 'all'], true) ? $scope : 'active';
+    }
+
+    private function applyScope(Builder $query, string $scope): Builder
+    {
+        return match ($scope) {
+            'trashed' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
     }
 }

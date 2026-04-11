@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Store;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -19,11 +20,13 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
+        $scope = $this->resolveScope($request);
         $filters = [
             'search' => trim((string) $request->input('search', '')),
             'category_id' => (string) $request->input('category_id', ''),
             'status' => (string) $request->input('status', ''),
             'featured' => (string) $request->input('featured', ''),
+            'scope' => $scope,
         ];
 
         $products = $this->filteredProductsQuery($filters)
@@ -36,6 +39,7 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => ProductCategory::query()->orderBy('name')->get(),
             'filters' => $filters,
+            'scope' => $scope,
             'stats' => [
                 'total_products' => Product::query()->count(),
                 'total_categories' => ProductCategory::query()->count(),
@@ -128,10 +132,25 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        $this->deleteExistingProductImage($product);
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Product archived successfully.');
+    }
+
+    public function restore(int $product): RedirectResponse
+    {
+        Product::withTrashed()->findOrFail($product)->restore();
+
+        return redirect()->route('admin.products.index', ['scope' => 'trashed'])->with('success', 'Product restored successfully.');
+    }
+
+    public function forceDelete(int $product): RedirectResponse
+    {
+        $product = Product::onlyTrashed()->findOrFail($product);
+        $this->deleteExistingProductImage($product);
+        $product->forceDelete();
+
+        return redirect()->route('admin.products.index', ['scope' => 'trashed'])->with('success', 'Product permanently deleted.');
     }
 
     private function rules(?Product $product = null): array
@@ -163,6 +182,7 @@ class ProductController extends Controller
         $featured = $filters['featured'] ?? '';
 
         return Product::query()
+            ->tap(fn (Builder $query) => $this->applyScope($query, $filters['scope'] ?? 'active'))
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($productQuery) use ($search) {
                     $productQuery
@@ -280,5 +300,21 @@ class ProductController extends Controller
         }
 
         return $resolved;
+    }
+
+    private function resolveScope(Request $request): string
+    {
+        $scope = (string) $request->input('scope', 'active');
+
+        return in_array($scope, ['active', 'trashed', 'all'], true) ? $scope : 'active';
+    }
+
+    private function applyScope(Builder $query, string $scope): Builder
+    {
+        return match ($scope) {
+            'trashed' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
     }
 }

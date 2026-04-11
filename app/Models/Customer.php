@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PreservesUniqueAttributesOnSoftDelete;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     use HasFactory;
+    use PreservesUniqueAttributesOnSoftDelete;
+    use SoftDeletes;
 
     protected $fillable = [
         'store_id',
@@ -24,6 +28,7 @@ class Customer extends Model
 
     protected $casts = [
         'metadata' => 'array',
+        'archived_unique_values' => 'array',
         'last_message_at' => 'datetime',
     ];
 
@@ -62,5 +67,10 @@ class Customer extends Model
             ->filter()
             ->values()
             ->all();
+    }
+
+    public function getUniqueSoftDeleteColumns(): array
+    {
+        return ['phone'];
     }
 }

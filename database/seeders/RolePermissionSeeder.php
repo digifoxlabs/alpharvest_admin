@@ -35,6 +35,7 @@ class RolePermissionSeeder extends Seeder
             'delete orders',
             'view inventory',
             'create inventory',
+            'delete inventory',
             'view customers',
             'edit customers',
             'delete customers',

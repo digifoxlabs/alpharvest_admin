@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PreservesUniqueAttributesOnSoftDelete;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
     use HasFactory;
+    use PreservesUniqueAttributesOnSoftDelete;
+    use SoftDeletes;
 
     protected $fillable = [
         'store_id',
@@ -34,6 +38,7 @@ class Product extends Model
 
     protected $casts = [
         'metadata' => 'array',
+        'archived_unique_values' => 'array',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'price' => 'decimal:2',
@@ -54,7 +59,7 @@ class Product extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id')->withTrashed();
     }
 
     public function orderItems(): HasMany
@@ -88,5 +93,10 @@ class Product extends Model
     public function getHasDiscountAttribute(): bool
     {
         return $this->sale_price !== null && (float) $this->sale_price < (float) $this->price;
+    }
+
+    public function getUniqueSoftDeleteColumns(): array
+    {
+        return ['slug', 'sku'];
     }
 }

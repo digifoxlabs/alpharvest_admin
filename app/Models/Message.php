@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PreservesUniqueAttributesOnSoftDelete;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
 {
     use HasFactory;
+    use PreservesUniqueAttributesOnSoftDelete;
+    use SoftDeletes;
 
     protected $fillable = [
         'conversation_id',
@@ -24,6 +28,7 @@ class Message extends Model
 
     protected $casts = [
         'payload' => 'array',
+        'archived_unique_values' => 'array',
         'sent_at' => 'datetime',
         'delivered_at' => 'datetime',
         'read_at' => 'datetime',
@@ -82,5 +87,10 @@ class Message extends Model
             ?: data_get($this->payload, 'error_message')
             ?: data_get($this->payload, 'response_body')
             ?: data_get($this->payload, 'reason');
+    }
+
+    public function getUniqueSoftDeleteColumns(): array
+    {
+        return ['whatsapp_message_id'];
     }
 }

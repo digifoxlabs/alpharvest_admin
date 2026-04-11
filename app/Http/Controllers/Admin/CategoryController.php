@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
 use App\Models\Store;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,12 +16,15 @@ class CategoryController extends Controller
 {
     public function index(): View
     {
+        $scope = $this->resolveScope(request());
+
         $categories = ProductCategory::with('store')
+            ->tap(fn (Builder $query) => $this->applyScope($query, $scope))
             ->orderBy('sort_order')
             ->orderBy('name')
             ->paginate(10);
 
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories', 'scope'));
     }
 
     public function create(): View
@@ -61,7 +65,21 @@ class CategoryController extends Controller
     {
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category archived successfully.');
+    }
+
+    public function restore(int $category): RedirectResponse
+    {
+        ProductCategory::withTrashed()->findOrFail($category)->restore();
+
+        return redirect()->route('admin.categories.index', ['scope' => 'trashed'])->with('success', 'Category restored successfully.');
+    }
+
+    public function forceDelete(int $category): RedirectResponse
+    {
+        ProductCategory::onlyTrashed()->findOrFail($category)->forceDelete();
+
+        return redirect()->route('admin.categories.index', ['scope' => 'trashed'])->with('success', 'Category permanently deleted.');
     }
 
     private function rules(?ProductCategory $category = null): array
@@ -97,5 +115,21 @@ class CategoryController extends Controller
         }
 
         return $resolved;
+    }
+
+    private function resolveScope(Request $request): string
+    {
+        $scope = (string) $request->input('scope', 'active');
+
+        return in_array($scope, ['active', 'trashed', 'all'], true) ? $scope : 'active';
+    }
+
+    private function applyScope(Builder $query, string $scope): Builder
+    {
+        return match ($scope) {
+            'trashed' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
     }
 }
