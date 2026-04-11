@@ -735,13 +735,13 @@ class ChatbotEngineService
             'body' => trim(implode("\n", [
                 'Delivery details saved.',
                 $this->storeEngine->deliverySummary($customer),
-                'Our store team will send your payment link shortly.',
+                'Our store team will update you shortly.',
             ])),
             'buttons' => [
                 ['id' => 'my_orders', 'title' => 'My Orders'],
                 ['id' => 'contact', 'title' => 'Contact'],
             ],
-            'footer' => 'Address saved for this order.',
+            'footer' => 'Type Help for more info',
         ]];
     }
 
