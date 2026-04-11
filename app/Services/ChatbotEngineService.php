@@ -29,6 +29,29 @@ class ChatbotEngineService
             : $this->normalizeCommand($incomingText);
         $text = Str::of($incomingText)->trim()->lower()->squish()->toString();
 
+        //If greeting by pass all awaiting commsnds
+        if ($this->isGreeting($command, $text)) {
+            // return [$this->mainMenuMessage($store)];
+
+            // If already has pincode → go directly to catalog
+            // if ($this->storeEngine->hasCustomerPincode($customer)) {
+            //     return $this->storefrontMessages($store, $customer, $conversation);
+            // }
+
+
+         $this->setConversationContext($conversation, [
+                'awaiting_address' => false,
+                'awaiting_order_id' => null,
+                'address_choice_map' => null,
+                'awaiting_pincode' => false,
+                'catalog_sync_pending' => false,
+                'awaiting_order_creation' => false,
+        ]);
+
+
+            return [$this->promptForPincode($store, $conversation)];
+        }
+
         if ($this->isAwaitingPincode($conversation) && ! $incomingCommand) {
             return $this->capturePincode($store, $customer, $conversation, $incomingText);
         }
@@ -49,16 +72,16 @@ class ChatbotEngineService
             return [$this->savedAddressDetailsMessage($store, $customer, $addressId)];
         }
 
-        if ($this->isGreeting($command, $text)) {
-            // return [$this->mainMenuMessage($store)];
+        // if ($this->isGreeting($command, $text)) {
+        //     // return [$this->mainMenuMessage($store)];
 
-            // If already has pincode → go directly to catalog
-            // if ($this->storeEngine->hasCustomerPincode($customer)) {
-            //     return $this->storefrontMessages($store, $customer, $conversation);
-            // }
+        //     // If already has pincode → go directly to catalog
+        //     // if ($this->storeEngine->hasCustomerPincode($customer)) {
+        //     //     return $this->storefrontMessages($store, $customer, $conversation);
+        //     // }
 
-            return [$this->promptForPincode($store, $conversation)];
-        }
+        //     return [$this->promptForPincode($store, $conversation)];
+        // }
 
         if (in_array($command, ['visit_store', 'menu', 'browse', 'products', 'storefront'], true)) {
             return $this->storefrontMessages($store, $customer, $conversation);
