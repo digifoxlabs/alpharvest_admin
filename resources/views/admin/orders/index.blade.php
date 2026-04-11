@@ -70,6 +70,7 @@
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Payment</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Total</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Items</th>
+                        <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Date</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Actions</th>
                     </tr>
                 </thead>
@@ -82,6 +83,7 @@
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ ucfirst($order->payment_status) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ number_format((float) $order->total, 2) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $order->items_count }}</td>
+                            <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ optional($order->placed_at ?: $order->created_at)->format('Y-m-d H:i') }}</td>
                             <td class="px-5 py-4">
                                 <div class="flex flex-wrap gap-2">
                                     @if ($scope !== 'trashed')

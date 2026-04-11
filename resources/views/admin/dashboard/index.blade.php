@@ -64,7 +64,7 @@
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Status</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Payment Status</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Delivery Address</th>
-                        <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Total Amount</th>
+                        <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Total Amt</th>
                         <th class="px-5 py-4 font-medium text-gray-600 dark:text-gray-300">Date</th>
                     </tr>
                 </thead>
