@@ -81,7 +81,7 @@
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ $order->customer?->name ?: $order->customer?->phone ?: 'Guest' }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ \Illuminate\Support\Str::headline($order->status) }}</td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ \Illuminate\Support\Str::headline($order->payment_status) }}</td>
-                            <td class="px-5 py-4 text-gray-600 dark:text-gray-300">
+                            <td class="px-5 py-4 text-gray-600 dark:text-gray-300 max-w-xs whitespace-normal break-words">
                                 {{ implode(', ', array_filter([$delivery['address'] ?? null, $delivery['city'] ?? null, $delivery['pincode'] ?? null])) ?: 'Not available' }}
                             </td>
                             <td class="px-5 py-4 text-gray-600 dark:text-gray-300">{{ number_format((float) $order->total, 2) }}</td>
