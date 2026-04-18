@@ -52,6 +52,11 @@ class Customer extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function feedback(): HasMany
+    {
+        return $this->hasMany(OrderFeedback::class);
+    }
+
     public function getDeliveryAddressLinesAttribute(): array
     {
         return collect(data_get($this->metadata, 'delivery.address_book', []))

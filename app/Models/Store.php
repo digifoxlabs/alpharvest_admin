@@ -70,6 +70,11 @@ class Store extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function orderFeedback(): HasMany
+    {
+        return $this->hasMany(OrderFeedback::class);
+    }
+
     public function payments()
     {
         return $this->hasManyThrough(Payment::class, Order::class);

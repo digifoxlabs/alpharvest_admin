@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Order;
+use App\Models\OrderFeedback;
 use App\Models\Product;
 use App\Models\Store;
 use Illuminate\Support\Arr;
@@ -159,11 +160,24 @@ class OrderWorkflowService
                 $updates['paid_at'] = null;
             }
 
+            if ($newStatus === 'delivered' && $oldStatus !== 'delivered') {
+                $updates['delivered_at'] = now();
+            }
+
+            if ($newStatus !== 'delivered') {
+                $updates['delivered_at'] = null;
+            }
+
             $order->forceFill($updates)->save();
             $this->ensurePublicToken($order);
 
             if ($oldStatus !== $newStatus || $oldPaymentStatus !== $newPaymentStatus) {
-                $this->notifyCustomer($order->fresh(['customer', 'store', 'conversation', 'items.product']));
+                $freshOrder = $order->fresh(['customer', 'store', 'conversation', 'items.product']);
+                $this->notifyCustomer($freshOrder);
+
+                if ($oldStatus !== 'delivered' && $newStatus === 'delivered') {
+                    $this->requestNpsFeedback($freshOrder);
+                }
             }
 
             return $order->fresh(['items.product', 'customer', 'store', 'conversation']);
@@ -252,6 +266,61 @@ class OrderWorkflowService
                 'Track order: ' . $publicUrl,
             ]),
             'payload' => $dispatch,
+            'sent_at' => ($dispatch['dispatched'] ?? false) ? now() : null,
+        ]);
+    }
+
+    protected function requestNpsFeedback(Order $order): void
+    {
+        if (! $order->customer || ! $order->store) {
+            return;
+        }
+
+        if (OrderFeedback::query()->where('order_id', $order->id)->exists()) {
+            return;
+        }
+
+        $dispatch = $this->cloudApi->sendListMessage(
+            $order->store,
+            $order->customer,
+            "How likely are you to recommend us for order {$order->order_number}? Please rate us from 1 to 10.",
+            'Submit score',
+            [[
+                'title' => 'Choose a score',
+                'rows' => collect(range(1, 10))->map(function (int $score) use ($order) {
+                    return [
+                        'id' => "nps:{$order->id}:{$score}",
+                        'title' => (string) $score,
+                        'description' => match (true) {
+                            $score <= 6 => 'Needs improvement',
+                            $score <= 8 => 'Satisfied',
+                            default => 'Highly satisfied',
+                        },
+                    ];
+                })->all(),
+            ]],
+            'Your feedback helps us improve.',
+            'Rate Your Experience'
+        );
+
+        $conversation = $order->conversation ?: $this->latestConversationForOrder($order);
+
+        if (! $conversation) {
+            return;
+        }
+
+        Message::create([
+            'conversation_id' => $conversation->id,
+            'direction' => 'outbound',
+            'type' => 'interactive',
+            'whatsapp_message_id' => $dispatch['message_id'] ?? null,
+            'body' => "NPS request for order {$order->order_number}",
+            'payload' => array_merge($dispatch, [
+                'reporting' => [
+                    'type' => 'nps_request',
+                    'order_id' => $order->id,
+                ],
+            ]),
             'sent_at' => ($dispatch['dispatched'] ?? false) ? now() : null,
         ]);
     }

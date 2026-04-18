@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PermissionManagementController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleManagementController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -151,6 +152,8 @@ Route::prefix('admin')
         });
 
         Route::middleware(['role:admin'])->group(function () {
+            Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
             Route::get('/system-report', function () {
                 return view('admin.system-report');
             })->name('system-report');

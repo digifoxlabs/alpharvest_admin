@@ -30,6 +30,7 @@ class Order extends Model
         'metadata',
         'placed_at',
         'paid_at',
+        'delivered_at',
     ];
 
     protected $casts = [
@@ -39,6 +40,7 @@ class Order extends Model
         'total' => 'decimal:2',
         'placed_at' => 'datetime',
         'paid_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function store(): BelongsTo
@@ -69,6 +71,11 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function feedback(): HasMany
+    {
+        return $this->hasMany(OrderFeedback::class);
     }
 
     public function inventoryTransactions(): HasMany

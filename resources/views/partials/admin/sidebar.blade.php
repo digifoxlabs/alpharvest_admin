@@ -143,6 +143,13 @@
 
                     @role('admin')
                         <li>
+                            <a href="{{ route('admin.reports.index') }}"
+                                class="menu-item {{ request()->routeIs('admin.reports.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Reports</span>
+                            </a>
+                        </li>
+
+                        <li>
                             <a href="{{ route('admin.system-report') }}"
                                 class="menu-item {{ request()->routeIs('admin.system-report') ? 'menu-item-active' : 'menu-item-inactive' }}">
                                 <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Admin Only</span>

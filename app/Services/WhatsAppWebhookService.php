@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Conversation;
 use App\Models\Customer;
 use App\Models\Message;
+use App\Models\Order;
+use App\Models\OrderFeedback;
 use App\Models\Store;
 use App\Models\WebhookEvent;
 use Illuminate\Support\Arr;
@@ -170,6 +172,10 @@ class WhatsAppWebhookService
             'last_message_at' => now(),
         ])->save();
 
+        if ($this->handleNpsFeedback($store, $customer, $inbound, $message)) {
+            return;
+        }
+
         $responses = $this->chatbot->reply(
             $store,
             $customer,
@@ -301,5 +307,64 @@ class WhatsAppWebhookService
         }
 
         $message->forceFill($attributes)->save();
+    }
+
+    protected function handleNpsFeedback(Store $store, Customer $customer, array $inbound, array $message): bool
+    {
+        $command = (string) ($inbound['command'] ?? '');
+
+        if (! preg_match('/^nps:(\d+):(\d+)$/', $command, $matches)) {
+            return false;
+        }
+
+        $orderId = (int) $matches[1];
+        $score = (int) $matches[2];
+
+        if ($score < 1 || $score > 10) {
+            return true;
+        }
+
+        $order = Order::query()
+            ->where('id', $orderId)
+            ->where('store_id', $store->id)
+            ->where('customer_id', $customer->id)
+            ->first();
+
+        if (! $order) {
+            return true;
+        }
+
+        OrderFeedback::query()->updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'store_id' => $store->id,
+                'customer_id' => $customer->id,
+                'score' => $score,
+                'channel' => 'whatsapp',
+                'payload' => $message,
+                'responded_at' => now(),
+            ]
+        );
+
+        $acknowledgement = $this->cloudApi->sendTextMessage(
+            $store,
+            $customer,
+            "Thanks for rating order {$order->order_number} with a {$score}/10."
+        );
+
+        $conversation = Conversation::query()
+            ->where('store_id', $store->id)
+            ->where('customer_id', $customer->id)
+            ->latest('last_message_at')
+            ->first();
+
+        if ($conversation) {
+            $this->storeOutboundMessage($conversation, [
+                'kind' => 'text',
+                'body' => "Thanks for rating order {$order->order_number} with a {$score}/10.",
+            ], $acknowledgement);
+        }
+
+        return true;
     }
 }
